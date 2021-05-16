@@ -43,4 +43,4 @@ Success! 'bitcoin' is 'BTC'
 {'name': 'Bitcoin', 'id': 1, 'symbol': 'BTC', 'price': 48095.88800172, 'price_btc': 1, 'percent_change_24h': -5.01, 'percent_change_7d': -17.73, 'percent_change_30d': -21.09, 'interval': 'day', 'open': 48048.52111538, 'close': 48169.10815053, 'high': 48667.50607115, 'low': 46883.95534405}
 None
 {'name': 'Bitcoin', 'id': 1, 'symbol': 'BTC', 'price': 48095.88800172, 'price_btc': 1, 'percent_change_24h': -5.01, 'percent_change_7d': -17.73, 'percent_change_30d': -21.09, 'interval': 'day', 'open': 48048.52111538, 'close': 48169.10815053, 'high': 48667.50607115, 'low': 46883.95534405}
-</pre></code>
+</code></pre>
