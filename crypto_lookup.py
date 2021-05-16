@@ -28,7 +28,7 @@ class LunarCrush:
       response = requests.get(url)
 
       if response.status_code == 400:
-        print(f"Attempting to lookup the symbol for '{symbol}'...")
+        print(f"Attempting to find the symbol for '{symbol}'.")
         result = self.symbol_lookup(symbol)
 
         if result is not None:

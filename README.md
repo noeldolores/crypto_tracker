@@ -19,7 +19,7 @@ Output from examples in main.py:
 > coin = crypto_lookup.LunarCrush('dogecoin')
 > print(coin.data)
 
-.. Attempting to lookup the symbol for 'dogecoin'...
+.. Attempting to find the symbol for 'dogecoin'.
 .. Success! 'dogecoin' is 'DOGE'
 .. {'name': 'Dogecoin', 'id': 29, 'symbol': 'DOGE', 'price': 0.53744006, 'price_btc': 1.117434529914e-05, 'percent_change_24h': -4.53, 'percent_change_7d': -11.35, 'percent_change_30d': 67.4, 'interval': 'day', 'open': 0.51333036, 'close': 0.53757696, 'high': 0.53569002, 'low': 0.51094014}
 
@@ -36,11 +36,11 @@ Output from examples in main.py:
 > coin = crypto_lookup.LunarCrush(coin_list)
 > print(*coin.data_list, sep='\n')
 
-.. Attempting to lookup the symbol for 'dogecoin'...
+.. Attempting to find the symbol for 'dogecoin'.
 .. Success! 'dogecoin' is 'DOGE'
-.. Attempting to lookup the symbol for 'asdb'...
+.. Attempting to find the symbol for 'asdb'.
 .. 'asdb' not found. Please retry with the correct symbol or full name.
-.. Attempting to lookup the symbol for 'bitcoin'...
+.. Attempting to find the symbol for 'bitcoin'.
 .. Success! 'bitcoin' is 'BTC'
 .. {'name': 'Dogecoin', 'id': 29, 'symbol': 'DOGE', 'price': 0.53744006, 'price_btc': 1.117434529914e-05, 'percent_change_24h': -4.53, 'percent_change_7d': -11.35, 'percent_change_30d': 67.4, 'interval': 'day', 'open': 0.51333036, 'close': 0.53757696, 'high': 0.53569002, 'low': 0.51094014}
 .. {'name': 'Dogecoin', 'id': 29, 'symbol': 'DOGE', 'price': 0.53744006, 'price_btc': 1.117434529914e-05, 'percent_change_24h': -4.53, 'percent_change_7d': -11.35, 'percent_change_30d': 67.4, 'interval': 'day', 'open': 0.51333036, 'close': 0.53757696, 'high': 0.53569002, 'low': 0.51094014}
