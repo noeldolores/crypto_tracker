@@ -12,25 +12,30 @@ Planned features:<br/>
 <li>Database to track historical data of tracked currencies</li>
 </ol><br/>
 
-<pre><code>
-<b>Output from examples in main.py:</b>
+```
+**Output from examples in main.py:**
 
-<b># test with full crypto name</b>
-<b>coin = crypto_lookup.LunarCrush('dogecoin')</b>
-<b>print(coin.data)</b>
+> # test with full crypto name
+> coin = crypto_lookup.LunarCrush('dogecoin')
+> print(coin.data)
+
 Attempting to lookup the symbol for 'dogecoin'...
 Success! 'dogecoin' is 'DOGE'
 {'name': 'Dogecoin', 'id': 29, 'symbol': 'DOGE', 'price': 0.53744006, 'price_btc': 1.117434529914e-05, 'percent_change_24h': -4.53, 'percent_change_7d': -11.35, 'percent_change_30d': 67.4, 'interval': 'day', 'open': 0.51333036, 'close': 0.53757696, 'high': 0.53569002, 'low': 0.51094014}
 
-<b># test with crypto symbol</b>
-<b>coin = crypto_lookup.LunarCrush('doge')</b>
-<b>print(coin.data)</b>
+
+> # test with crypto symbol
+> coin = crypto_lookup.LunarCrush('doge')
+> print(coin.data)
+
 {'name': 'Dogecoin', 'id': 29, 'symbol': 'DOGE', 'price': 0.53744006, 'price_btc': 1.117434529914e-05, 'percent_change_24h': -4.53, 'percent_change_7d': -11.35, 'percent_change_30d': 67.4, 'interval': 'day', 'open': 0.51333036, 'close': 0.53757696, 'high': 0.53569002, 'low': 0.51094014}
 
-<b># test with list of cryptos, mixed format and non-existing currency: 'asdb'</b>
-<b>coin_list = ['dogecoin', 'doge', 'safemoon', 'btc', 'asdb', 'bitcoin']</b>
-<b>coin = crypto_lookup.LunarCrush(coin_list)</b>
-<b>print(*coin.data_list, sep='\n')</b>
+
+> # test with list of cryptos, mixed format and non-existing currency: 'asdb'
+> coin_list = ['dogecoin', 'doge', 'safemoon', 'btc', 'asdb', 'bitcoin']
+> coin = crypto_lookup.LunarCrush(coin_list)
+> print(*coin.data_list, sep='\n')
+
 Attempting to lookup the symbol for 'dogecoin'...
 Success! 'dogecoin' is 'DOGE'
 Attempting to lookup the symbol for 'asdb'...
@@ -44,3 +49,4 @@ Success! 'bitcoin' is 'BTC'
 None
 {'name': 'Bitcoin', 'id': 1, 'symbol': 'BTC', 'price': 48095.88800172, 'price_btc': 1, 'percent_change_24h': -5.01, 'percent_change_7d': -17.73, 'percent_change_30d': -21.09, 'interval': 'day', 'open': 48048.52111538, 'close': 48169.10815053, 'high': 48667.50607115, 'low': 46883.95534405}
 </code></pre>
+```
