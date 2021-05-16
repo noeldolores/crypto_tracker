@@ -8,6 +8,7 @@ Current features:<br/>
 
 Planned features:<br/>
 <ol>
+<li>Store 'favorited' currencies for quick querying with command line output.</li>
 <li>Connected Flask app to act as a tracking dasboard.</li>
 <li>Database to track historical data of tracked currencies.</li>
 <li>Connect additional APIs to source data for currencies not available through LunarCrush.</li>
