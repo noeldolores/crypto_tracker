@@ -3,6 +3,7 @@ A personal use crypto tracker.
 Current features:<br/>
 <ol>
 <li>Lookup of most cryptocurrencies, with a command line output.</li>
+<li>Ability to pass a list of currencies as an argument for the command line output feature</li>
 </ol><br/>
 
 ```
@@ -26,7 +27,6 @@ Example Output:
 
 Planned features:<br/>
 <ol>
-<li>Ability to pass a list of currencies as an argument for the command line output feature</li>
 <li>Connected Flask app to act as a tracking dasboard</li>
 <li>Database to track historical data of tracked currencies</li>
 </ol><br/>

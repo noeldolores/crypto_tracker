@@ -12,43 +12,47 @@ class LunarCrush:
     self.symbol = symbol
     self.api_key = self.load_api_key()
     self.interval = 'day'
-    
-    self.get_data(self.interval)
+
+    if type(self.symbol) == str:
+      self.get_data(self.symbol, self.interval)
+
+    elif type(self.symbol) == list:
+      self.data_list = [self.get_data(x, self.interval) for x in self.symbol]
 
 
-  def get_data(self, interval):
-    ## interval can equal "day" or "hour"
-    self.interval = interval
-    url = self.set_url()
+  def get_data(self, symbol, interval):
+    ## interval = ('day', 'hour')
+    url = self.set_url(symbol, interval)
 
     try:
       response = requests.get(url)
 
       if response.status_code == 400:
-        print(f"Attempting to lookup the symbol for '{self.symbol}'...")
-        result = self.symbol_lookup(self.symbol)
+        print(f"Attempting to lookup the symbol for '{symbol}'...")
+        result = self.symbol_lookup(symbol)
 
         if result is not None:
-          print(f"Success! '{self.symbol}' is '{result}'")
-          self.symbol = result
-          url = self.set_url()
+          print(f"Success! '{symbol}' is '{result}'")
+          symbol = result
+          url = self.set_url(symbol, interval)
           response = requests.get(url)
+
         else:
-          print(f"'{self.symbol}' not found. Please retry with the correct symbol or full name.")
-          sys.exit(1)
+          print(f"'{symbol}' not found. Please retry with the correct symbol or full name.")
+          return None
 
       temp_dict = json.loads(response.content)['data'][0]
       self.data = self.parse_relevant_data(temp_dict)
 
     except Exception as e:
       print(e)
-      sys.exit(1)
+      return None
 
     return self.data
 
 
-  def set_url(self):
-    return f"https://api.lunarcrush.com/v2?data=assets&key={self.api_key}&symbol={self.symbol}&data_points=1&interval={self.interval}&time_series_indicators=open,close,high,low"
+  def set_url(self, symbol, interval):
+    return f"https://api.lunarcrush.com/v2?data=assets&key={self.api_key}&symbol={symbol}&data_points=1&interval={interval}&time_series_indicators=open,close,high,low"
 
 
   def load_api_key(self):
