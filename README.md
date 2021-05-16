@@ -21,6 +21,7 @@ Example Output:
   'high': 0.5272357, 
   'low': 0.51146463 }
 ```
+<br/>
 
 Planned features:<br/>
 <ol>
