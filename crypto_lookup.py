@@ -1,10 +1,8 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-import html
 import json
 from dotenv import load_dotenv
-import sys
 
 
 class LunarCrush:
@@ -85,7 +83,7 @@ class LunarCrush:
     soup = BeautifulSoup(response.content, "html.parser")
     result = soup.find('script', {'type': 'application/ld+json'})
     if result is not None:
-      raw_json = json.loads(html.unescape(result.string))
+      raw_json = json.loads(result.string)
       return raw_json['currency']
 
     return None
