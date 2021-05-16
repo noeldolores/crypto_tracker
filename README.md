@@ -13,7 +13,7 @@ Planned features:<br/>
 </ol><br/>
 
 <pre><code>
-<b>Output from examples in main.py:</b>
+<h3>Output from examples in main.py:</h3>
 
 <b># test with full crypto name</b>
 <b>coin = crypto_lookup.LunarCrush('dogecoin')</b>
