@@ -2,7 +2,7 @@ A personal use crypto tracker.
 
 Current features:<br/>
 <ol>
-<li>Lookup of most cryptocurrencies</li>
+<li>Lookup of most cryptocurrencies, with a command line output</li>
 </ol><br/>
 
 ```
