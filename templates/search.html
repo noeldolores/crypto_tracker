@@ -130,7 +130,7 @@
 
       function output() {
         var hour24 = document.getElementById('24h');
-        var day1 = document.getElementById('7d');
+        var day7 = document.getElementById('7d');
         var day30 = document.getElementById('30d');
 
         if (parseFloat(hour24.innerText) / 100.0 >= 0) {
@@ -138,10 +138,10 @@
         } else {
           hour24.style.color = "red";
         }
-        if (parseFloat(day1.innerText) / 100.0 >= 0) {
-          day1.style.color = "green";
+        if (parseFloat(day7.innerText) / 100.0 >= 0) {
+          day7.style.color = "green";
         } else {
-          day1.style.color = "red";
+          day7.style.color = "red";
         }
         if (parseFloat(day30.innerText) / 100.0 >= 0) {
           day30.style.color = "green";
