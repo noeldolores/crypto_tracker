@@ -11,7 +11,7 @@ class LunarCrush:
     self.interval = 'day'
 
     if type(symbol) == str:
-      self.get_data(symbol, self.interval)
+      self.data = self.get_data(symbol, self.interval)
 
     elif type(symbol) == list:
       self.data_list = [self.get_data(x, self.interval) for x in symbol]

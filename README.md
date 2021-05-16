@@ -4,6 +4,7 @@ Current features:<br/>
 <ol>
 <li>Uses the <a href="https://lunarcrush.com/developers/docs#assets">LunarCrush API</a> to query cryptocurrencies, returning a command line output.</li>
 <li>Ability to pass a either a single currency or a list of currencies as an argument for the command line output feature.</li>
+<li>Connected Flask app to look up cryptocurrencies</li>
 </ol><br/>
 
 Planned features:<br/>
