@@ -7,6 +7,7 @@ Current features:<br/>
 
 ```
 Example Output:
+
 { 'name': 'Dogecoin', 
   'id': 29, 
   'symbol': 'DOGE', 
