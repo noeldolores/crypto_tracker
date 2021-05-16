@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-
-from logging import exception
 import os
-import urllib.request
 import requests
 from bs4 import BeautifulSoup
 import html
@@ -93,6 +90,10 @@ class LunarCrush:
 
 
 
-
+#test with full crypto name
 coin = LunarCrush('dogecoin')
+print(coin.data)
+
+#test with crypto symbol
+coin = LunarCrush('doge')
 print(coin.data)
