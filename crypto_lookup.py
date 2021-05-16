@@ -7,20 +7,19 @@ from dotenv import load_dotenv
 
 class LunarCrush:
   def __init__(self, symbol):
-    self.symbol = symbol
     self.api_key = self.load_api_key()
     self.interval = 'day'
 
-    if type(self.symbol) == str:
-      self.get_data(self.symbol, self.interval)
+    if type(symbol) == str:
+      self.get_data(symbol, self.interval)
 
-    elif type(self.symbol) == list:
-      self.data_list = [self.get_data(x, self.interval) for x in self.symbol]
+    elif type(symbol) == list:
+      self.data_list = [self.get_data(x, self.interval) for x in symbol]
 
 
-  def get_data(self, symbol, interval):
+  def get_data(self, symbol, interval='day'):
     ## interval = ('day', 'hour')
-    url = self.set_url(symbol, interval)
+    url = self.set_url(self.api_key, symbol, interval)
 
     try:
       response = requests.get(url)
@@ -32,7 +31,7 @@ class LunarCrush:
         if result is not None:
           print(f"Success! '{symbol}' is '{result}'")
           symbol = result
-          url = self.set_url(symbol, interval)
+          url = self.set_url(self.api_key, symbol, interval)
           response = requests.get(url)
 
         else:
@@ -49,8 +48,8 @@ class LunarCrush:
     return self.data
 
 
-  def set_url(self, symbol, interval):
-    return f"https://api.lunarcrush.com/v2?data=assets&key={self.api_key}&symbol={symbol}&data_points=1&interval={interval}&time_series_indicators=open,close,high,low"
+  def set_url(self, api_key, symbol, interval):
+    return f"https://api.lunarcrush.com/v2?data=assets&key={api_key}&symbol={symbol}&data_points=1&interval={interval}&time_series_indicators=open,close,high,low"
 
 
   def load_api_key(self):
