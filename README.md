@@ -5,6 +5,7 @@ Current features:<br/>
 <li>Lookup of most cryptocurrencies</li>
 </ol><br/>
 
+```
 Example Output:
 { 'name': 'Dogecoin', 
   'id': 29, 
@@ -19,7 +20,7 @@ Example Output:
   'close': 0.52385513, 
   'high': 0.5272357, 
   'low': 0.51146463 }
-
+```
 
 Planned features:<br/>
 <ol>
