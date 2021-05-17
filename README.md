@@ -15,3 +15,6 @@ Planned features:<br/>
 <li>Database to track historical data of tracked currencies.</li>
 <li>Connect additional APIs to source data for currencies not available through LunarCrush.</li>
 </ol><br/>
+
+Example Outputs:<br/>
+![Image of Flask Output](https://github.com/noeldolores/crypto_tracker/blob/master/images/flask_example.png)
