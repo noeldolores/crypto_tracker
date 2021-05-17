@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import crypto_lookup
-import sys
 
 
 def coin_query(coin):
