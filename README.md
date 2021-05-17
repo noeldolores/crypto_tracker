@@ -1,6 +1,6 @@
 # A personal use crypto tracker.
 
-## Requires the <a href="https://lunarcrush.com/developers/docs">LunarCrush API</a> to use.
+Requires the <a href="https://lunarcrush.com/developers/docs">LunarCrush API</a> to use.
 
 <br/>
 Current features:<br/>
