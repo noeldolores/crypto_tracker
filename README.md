@@ -27,6 +27,8 @@ Command Line Interface
 {'name': 'Dogecoin', 'id': 29, 'symbol': 'DOGE', 'price': 0.48784339, 'price_btc': 1.1206642712667e-05, 'percent_change_24h': -8.82, 'percent_change_7d': 1.73, 'percent_change_30d': 58.61, 'interval': 'day', 'open': 0.51932927, 'close': 0.4862366, 'high': 0.52152868, 'low': 0.46472414}
 {'name': 'SafeMoon', 'id': 12242, 'symbol': 'SAFEMOON', 'price': 8.18e-06, 'price_btc': 1.87909356e-10, 'percent_change_24h': -8.04, 'percent_change_7d': -6.18, 'percent_change_30d': 319.99, 'interval': 'day', 'open': 8.26e-06, 'close': 8.34e-06, 'high': 8.87e-06, 'low': 7.86e-06}
 ```
+
 <br/>
 Flask App Interface<br/>
+
 ![Image of Flask Output](https://github.com/noeldolores/crypto_tracker/blob/master/images/flask_example.png)
