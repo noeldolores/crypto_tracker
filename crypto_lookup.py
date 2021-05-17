@@ -5,17 +5,19 @@ import json
 from dotenv import load_dotenv
 
 
+
 class LunarCrush:
   def __init__(self, symbol):
     self.api_key = self.load_api_key()
     self.interval = 'day'
+    self.data_list = None
+    self.data = None
 
     if type(symbol) == str:
       self.data = self.get_data(symbol, self.interval)
-
     elif type(symbol) == list:
       self.data_list = [self.get_data(x, self.interval) for x in symbol]
-
+      
 
   def get_data(self, symbol, interval='day'):
     ## interval = ('day', 'hour')
