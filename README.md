@@ -2,10 +2,10 @@ A personal use crypto tracker.
 
 Current features:<br/>
 <ol>
-<li>Uses the <a href="https://lunarcrush.com/developers/docs#assets">LunarCrush API</a> to query cryptocurrencies, returning a command line output.</li>
+<li>Uses the <a href="https://lunarcrush.com/developers/docs#assets">LunarCrush API</a> to query cryptocurrencies, outputting to command line or Flask app.</li>
 <li>Ability to pass a either a single currency or a list of currencies as an argument for the command line output feature.</li>
 <li>Connected Flask app to look up cryptocurrencies</li>
-<li>Scrapes <a href="https://coinmarketcap.com/">CoinMarketCap</a> when necessary to allow searching by crypto name or symbol/shorthand</li>
+<li>Scrapes <a href="https://coinmarketcap.com/">CoinMarketCap</a> when necessary to allow searching by crypto's name or symbol/shorthand.</li>
 </ol><br/>
 
 Planned features:<br/>
