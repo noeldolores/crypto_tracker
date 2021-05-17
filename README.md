@@ -1,7 +1,8 @@
-A personal use crypto tracker.
+# A personal use crypto tracker.
 
-Requires the <a href="https://lunarcrush.com/developers/docs">LunarCrush API</a> to use.
+## Requires the <a href="https://lunarcrush.com/developers/docs">LunarCrush API</a> to use.
 
+<br/>
 Current features:<br/>
 <ol>
 <li>Uses <a href="https://lunarcrush.com/dashboard">LunarCrush</a> to query cryptocurrencies, outputting to command line or Flask app.</li>
