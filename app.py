@@ -15,8 +15,6 @@ def run_search(coin_query):
     return result, bad_query
     
 
-
-
 @app.route("/", methods=['POST', 'GET'])
 def search(result=None, bad_query=None):
     if request.method == 'POST':
