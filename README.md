@@ -33,6 +33,7 @@ Planned features:<br/>
 <br/>
 Command Line Interface
 <br/>
+
 ```
 > ./command_line.py
 > Enter one or more cryptos, comma-separated with no spaces:btc,doge,safemoon
