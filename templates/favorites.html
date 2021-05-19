@@ -1,67 +1,9 @@
 <!doctype html>
 
 <html>
-  <style>
-    body {
-      background-color: #14171A;
-    }
-    h1 {
-      color:white;
-      text-align: center;
-      margin-bottom: 10%;
-      font-size: 82px;
-    }
-    .line-input {
-      margin: auto;
-      width:100%;
-      max-width: 674px;
-      height:25%;
-      text-align:center;
-      font-size: 36px;
-      color: #000000;
-      background-color: #64676b;
-      border-color: white;
-    }
-    ::placeholder{
-      color: #1b1b1b;
-    }
-    .btn-block{
-      width:75%;
-      height:15%;
-      max-width: 75%;
-      margin-top: 24px;
-      font-size: 20px;
-      background-color: #ffffff;
-      color:#000000;
-      border-color: white;
-    }
-    .flexContainer {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .searchContainer {
-      text-align: center;
-    }
-    .tableContainer {
-      display: flex;
-      flex-flow: row wrap;
-      align-items: center;
-      justify-content: center;
-    }
-    .tableItem{
-      color:white;
-      flex-basis: auto;
-      font-size: 24px;
-      word-wrap: break-word;
-      margin: 3vw;
-      table-layout: auto;
-      width: 25%;
-    }
-  </style>
-  
-  <head class="searchContainer"> 
+  <link rel="stylesheet" href="{{ url_for('static', filename='style_favorites.css') }}">
+
+  <head> 
     <title>Cryptocurrency</title> 
   </head> 
 
@@ -75,7 +17,6 @@
         <button type="submit" class="btn btn-light text-primary btn-block" value="Submit">SEARCH</button>
       </div>
     </form>
-
 
     <div class="tableContainer">
       {% if favorites_list == None %}
