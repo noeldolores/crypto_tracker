@@ -1,0 +1,135 @@
+<!doctype html>
+
+<html>
+  <style>
+    body {
+      background-color: #14171A;
+    }
+    h1 {
+      color:white;
+      text-align: center;
+      margin-bottom: 10%;
+      font-size: 82px;
+    }
+    .line-input {
+      margin: auto;
+      width:100%;
+      max-width: 674px;
+      height:25%;
+      text-align:center;
+      font-size: 36px;
+      color: #000000;
+      background-color: #64676b;
+      border-color: white;
+    }
+    ::placeholder{
+      color: #1b1b1b;
+    }
+    .btn-block{
+      width:75%;
+      height:15%;
+      max-width: 75%;
+      margin-top: 24px;
+      font-size: 20px;
+      background-color: #ffffff;
+      color:#000000;
+      border-color: white;
+    }
+    .flexContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .searchContainer {
+      text-align: center;
+    }
+    .tableContainer {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      justify-content: center;
+    }
+    .tableItem{
+      color:white;
+      flex-basis: auto;
+      font-size: 24px;
+      word-wrap: break-word;
+      margin: 3vw;
+      table-layout: auto;
+      width: 25%;
+    }
+  </style>
+  
+  <head class="searchContainer"> 
+    <title>Cryptocurrency</title> 
+  </head> 
+
+  <body id="myFrame" class="flexContainer">
+    <form method="POST" autocomplete="off" class="searchContainer"> 
+      <h1>Cryptocurrency</h1>
+      <div class="form-group">
+        <input type="text" class="line-input" name="coin_query" placeholder="coin name or symbol" required>
+      </div>
+      <div class="form-group">                                                        
+        <button type="submit" class="btn btn-light text-primary btn-block" value="Submit">SEARCH</button>
+      </div>
+    </form>
+
+
+    <div class="tableContainer">
+      {% if favorites_list == None %}
+      {% else %}
+        <script language="javascript" type="text/javascript">
+          var favorites_list = {{ favorites_list|tojson }}
+          
+          for (var i=0; i<favorites_list.length; i++) {
+            document.write('<table class="tableItem" border=2>');
+            document.write("<tr>");
+            document.write('<th align="left">',favorites_list[i]['name'],"</th>");
+            document.write('<th align="right">',favorites_list[i]['symbol'],"</th>");
+            document.write("</tr>");
+
+            document.write("<tr>")
+            document.write('<td align="left">',"Current Price","</th>")
+            document.write('<td align="right" class="price">',favorites_list[i]['price'],"</th>")
+            document.write("</tr>")
+
+            document.write("<tr>")
+            document.write('<td align="left">',"24-Hour Change","</th>")
+            document.write('<td align="right" class="num price_change">',favorites_list[i]['percent_change_24h']+' %',"</th>")
+            document.write("</tr>")
+
+            document.write("<tr>")
+            document.write('<td align="left">',"7-Day Change","</th>")
+            document.write('<td align="right" class="num">',favorites_list[i]['percent_change_7d']+' %',"</th>")
+            document.write("</tr>")
+
+            document.write("<tr>")
+            document.write('<td align="left">',"30-Day Change","</th>")
+            document.write('<td align="right" class="num">',favorites_list[i]['percent_change_30d']+' %',"</th>")
+            document.write("</tr>")
+            document.write("</table>");
+          }
+        </script>
+      {% endif %}
+    </div>
+
+    <script>
+      document.getElementById("myFrame").onload = function() {output()};
+
+      function output() {
+        var targets = document.getElementsByClassName('num');
+        for( var i in targets ) {
+          if (parseFloat(targets[i].innerText) / 100.0 >= 0) {
+            targets[i].style.color = "green";
+          } else {
+            targets[i].style.color = "red";
+          }
+        }
+      }
+      output();
+    </script>
+  
+  </body>     
+</html>
