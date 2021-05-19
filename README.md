@@ -1,25 +1,35 @@
 # A personal use crypto tracker.
 
-Requires the <a href="https://lunarcrush.com/developers/docs">LunarCrush API</a> to use.
+<br/>
+How to use:<br/>
+<ol>
+<li><a href="https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository">Clone</a> this repository.</li>
+<li>Create a free account over at <a href="https://lunarcrush.com/">LunarCrush</a>, and generate your API Key <a href="https://lunarcrush.com/developers/docs">here.</a>.</li>
+<li>In your project directory create a file named '.env', and on the first line write: LUNARCRUSH_API_KEY=YOURKEYHERE</li>
+<li>Create and activate a virtual environment and run: pip install -r requirements.txt</li>
+<li>In your project directory create a file named 'favorites.txt'. On each line, add Cryptos that you would like to auto-load upon visiting the */favorites page of your Flask app.</li>
+<li>To use the command-line interface, run: ./command_line.py</li>
+<li>To start the Flask interface, run: ./start_app.sh</li>
+</ol>
+
 
 <br/>
 Current features:<br/>
 <ol>
-<li>Uses <a href="https://lunarcrush.com/dashboard">LunarCrush</a> to query cryptocurrencies, outputting to command line or Flask app.</li>
+<li>Uses <a href="https://lunarcrush.com/dashboard">LunarCrush</a> to query cryptocurrency information, outputting results to the command line or Flask app.</li>
 <li>Ability to pass a either a single currency or a list of currencies as an argument for the command line output feature.</li>
-<li>Connected Flask app to look up cryptocurrencies</li>
 <li>Scrapes <a href="https://coinmarketcap.com/">CoinMarketCap</a> when necessary to allow searching by crypto's name or symbol/shorthand.</li>
+<li>The */favorites page reads a list of currencies from your local favorites.txt file to create a dashboard for viewing your choices with ease.</li>
 </ol><br/>
 
 Planned features:<br/>
 <ol>
-<li>Store 'favorited' currencies for quick querying with command line output.</li>
-<li>Connected Flask app to act as a tracking dasboard.</li>
-<li>Database to track historical data of tracked currencies.</li>
+<li>Add the ability to add and delete currencies from your 'favorites' within the Flask app interface.</li>
+<li>Database to track historical data of tracked currencies from within an expanded dashboard.</li>
 <li>Connect additional APIs to source data for currencies not available through LunarCrush.</li>
 </ol><br/>
 
-Example Outputs:<br/>
+## Example Outputs:<br/>
 <br/>
 Command Line Interface
 <br/>
@@ -32,6 +42,12 @@ Command Line Interface
 ```
 
 <br/>
-Flask App Interface<br/>
+Flask App Interface:<br/>
+<br/>
+Search Result
 
-![Image of Flask Output](https://github.com/noeldolores/crypto_tracker/blob/master/images/flask_example.png)
+![Image of Flask Output](https://github.com/noeldolores/crypto_tracker/blob/master/images/flask_example_search.png)
+<br/>
+Favorites Page
+
+![Image of Flask Output](https://github.com/noeldolores/crypto_tracker/blob/master/images/flask_example_favorites.png)
