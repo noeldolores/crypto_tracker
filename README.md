@@ -24,6 +24,7 @@ Current features:<br/>
 
 Planned features:<br/>
 <ol>
+<li>Add a 'go to favorites' button.</li>
 <li>Add the ability to add and delete currencies from your 'favorites' within the Flask app interface.</li>
 <li>Database to track historical data of tracked currencies from within an expanded dashboard.</li>
 <li>Connect additional APIs to source data for currencies not available through LunarCrush.</li>
