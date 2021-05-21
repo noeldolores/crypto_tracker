@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request
 import crypto_lookup
 
 app = Flask(__name__)
@@ -39,7 +39,7 @@ def favorites():
 
     favorites_list = []
     with open("favorites.txt", 'r') as f:
-        favorite_coins = f.readlines()
+        favorite_coins = f.read().splitlines() 
         for coin in favorite_coins:
             x = crypto_lookup.LunarCrush(coin)
             if x.data is not None:
@@ -48,5 +48,5 @@ def favorites():
                 x = crypto_lookup.CoinGecko(coin)
                 if x.data is not None:
                     favorites_list.append(x.data)
-                    
+
     return render_template('favorites.html', favorites_list=favorites_list)

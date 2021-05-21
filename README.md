@@ -30,6 +30,7 @@ Planned features:<br/>
 <li>Database to track historical data of tracked currencies from within an expanded dashboard.</li>
 <li>Connect additional APIs to source data for currencies not available through LunarCrush.</li>
 <li>Remove need for an API key using a suite of key-less sources.</li>
+<li>Integrate Flask 2.0 async functions.</li>
 </ol><br/>
 
 ## Example Outputs:<br/>
