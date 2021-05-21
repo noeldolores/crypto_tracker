@@ -20,6 +20,7 @@ Current features:<br/>
 <li>Ability to pass a either a single currency or a list of currencies as an argument for the command line output feature.</li>
 <li>Scrapes <a href="https://coinmarketcap.com/">CoinMarketCap</a> when necessary to allow searching by crypto's name or symbol/shorthand.</li>
 <li>The */favorites page reads a list of currencies from your local favorites.txt file to create a dashboard for viewing your choices with ease.</li>
+<li>Uses CoinGecko as a backup database for coins not on LunarCrush.</li>
 </ol><br/>
 
 Planned features:<br/>
@@ -28,6 +29,7 @@ Planned features:<br/>
 <li>Add the ability to add and delete currencies from your 'favorites' within the Flask app interface.</li>
 <li>Database to track historical data of tracked currencies from within an expanded dashboard.</li>
 <li>Connect additional APIs to source data for currencies not available through LunarCrush.</li>
+<li>Remove need for an API key using a suite of key-less sources.</li>
 </ol><br/>
 
 ## Example Outputs:<br/>
