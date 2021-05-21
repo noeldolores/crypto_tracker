@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from dotenv import load_dotenv
+import pickle
 
 
 
@@ -13,10 +14,10 @@ class LunarCrush:
     self.data_list = None
     self.data = None
 
-    if type(symbol) == str:
-      self.data = self.get_data(symbol, self.interval)
-    elif type(symbol) == list:
-      self.data_list = [self.get_data(x, self.interval) for x in symbol]
+    #if type(symbol) == str:
+    self.data = self.get_data(symbol, self.interval)
+    #elif type(symbol) == list:
+    #  self.data_list = [self.get_data(x, self.interval) for x in symbol]
       
 
   def get_data(self, symbol, interval='day'):
@@ -37,7 +38,7 @@ class LunarCrush:
           response = requests.get(url)
 
         else:
-          print(f"'{symbol}' not found. Please retry with the correct symbol or full name.")
+          print(f"'{symbol}' not found on LunarCrush. Searching CoinGecko database.")
           return None
 
       temp_dict = json.loads(response.content)['data'][0]
@@ -64,16 +65,16 @@ class LunarCrush:
       "name": data['name'],
       "id": data['id'],
       "symbol": data['symbol'],
-      "price": data['price'],
-      "price_btc": data['price_btc'],
+      "price": self.convert_sci_to_dec(data['price']),
+      # "price_btc": data['price_btc'],
       "percent_change_24h": data['percent_change_24h'],
       "percent_change_7d": data['percent_change_7d'],
       "percent_change_30d": data['percent_change_30d'],
-      "interval": self.interval,
-      "open": data['timeSeries'][0]['open'],
-      "close": data['timeSeries'][0]['close'],
-      "high": data['timeSeries'][0]['high'],
-      "low": data['timeSeries'][0]['low']
+      # "interval": self.interval,
+      # "open": data['timeSeries'][0]['open'],
+      # "close": data['timeSeries'][0]['close'],
+      # "high": data['timeSeries'][0]['high'],
+      # "low": data['timeSeries'][0]['low']
     }
 
     return data
@@ -87,4 +88,80 @@ class LunarCrush:
       raw_json = json.loads(result.string)
       return raw_json['currency']
 
+    return None
+
+
+  def convert_sci_to_dec(self, num):
+    return ("%.10f" % num).rstrip('0').rstrip('.')
+
+
+class CoinGecko:
+  def __init__(self, query):
+    self.data = None
+    coin_id = self.symbol_lookup(query.lower())
+    if coin_id is not None:
+      coin_data = self.get_data(coin_id)
+      self.data = self.parse_relevant_data(coin_data)
+
+
+  def symbol_lookup(self, query):
+    coin_list = self.generate_coin_list()
+    if coin_list is not None:
+      for coin in coin_list:
+        if query == coin['id'].lower() or query == coin['symbol'].lower() or query == coin['name'].lower():
+          return coin['id']
+
+    return None
+
+
+  def get_data(self, coin_id):
+    response = requests.request(method='GET', url=f"https://api.coingecko.com/api/v3/coins/{coin_id}?market_data=true")
+
+    if response.status_code == 200:
+      soup = BeautifulSoup(response.content, "html.parser")
+      coin_data = json.loads(soup.string)
+      return coin_data
+      
+    elif response.status_code == 404:
+      print(f"'{coin_id}' not found. Please check your search and try again.")
+
+    return None
+
+
+  def parse_relevant_data(self, coin_data):
+    data = {
+      "name": coin_data['name'],
+      "id": coin_data['id'],
+      "symbol": coin_data['symbol'],
+      "price": self.convert_sci_to_dec(coin_data['market_data']['current_price']['usd']),
+      "percent_change_24h": coin_data['market_data']['price_change_percentage_24h'],
+      "percent_change_7d": coin_data['market_data']['price_change_percentage_7d'],
+      "percent_change_30d": coin_data['market_data']['price_change_percentage_30d'],
+    }
+    return data
+
+
+  def convert_sci_to_dec(self, num):
+    return ("%.10f" % num).rstrip('0').rstrip('.')
+
+    
+  def generate_coin_list(self):
+    filename = 'coingecko.txt'
+    coin_list = []
+    if not os.path.exists(filename):
+      response = requests.request(method='GET', url="https://api.coingecko.com/api/v3/coins/list?include_platform=false")
+      if response.status_code == 200:
+        soup = BeautifulSoup(response.content, "html.parser")
+        coin_list = json.loads(soup.string)
+        with open(filename, 'wb+') as f:
+          pickle.dump(coin_list, f)
+
+        return coin_list
+    
+    else:
+      with open(filename, 'rb') as f:
+        coin_list = pickle.load(f)
+
+        return coin_list
+        
     return None
