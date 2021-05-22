@@ -42,17 +42,17 @@ class LunarCrush:
       response = requests.get(url)
 
       if response.status_code == 400:
-        print(f"Attempting to find the symbol for '{symbol}'.")
+        #print(f"Attempting to find the symbol for '{symbol}'.")
         result = self.symbol_lookup(symbol)
 
         if result is not None:
-          print(f"Success! '{symbol}' is '{result}'")
+          #print(f"Success! '{symbol}' is '{result}'")
           symbol = result
           url = self.set_url(self.api_key, symbol, interval)
           response = requests.get(url)
 
         else:
-          print(f"'{symbol}' not found on LunarCrush. Searching CoinGecko database.")
+          #print(f"'{symbol}' not found on LunarCrush. Searching CoinGecko database.")
           return None
 
       temp_dict = json.loads(response.content)['data'][0]
@@ -118,7 +118,7 @@ class CoinGecko:
       coin_data = self.get_data(coin_id)
       self.data = self.parse_relevant_data(coin_data)
     else:
-      print(f"'{query}' not found on CoinGecko. Please check your search and try again.")
+      print(f"'{query}' not found. Please check your search and try again.")
 
 
   def symbol_lookup(self, query):
