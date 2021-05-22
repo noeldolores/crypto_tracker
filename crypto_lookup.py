@@ -117,6 +117,8 @@ class CoinGecko:
     if coin_id is not None:
       coin_data = self.get_data(coin_id)
       self.data = self.parse_relevant_data(coin_data)
+    else:
+      print(f"'{query}' not found on CoinGecko. Please check your search and try again.")
 
 
   def symbol_lookup(self, query):
@@ -136,9 +138,6 @@ class CoinGecko:
       soup = BeautifulSoup(response.content, "html.parser")
       coin_data = json.loads(soup.string)
       return coin_data
-      
-    elif response.status_code == 404:
-      print(f"'{coin_id}' not found. Please check your search and try again.")
 
     return None
 
