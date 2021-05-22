@@ -7,16 +7,33 @@ import pickle
 
 
 
+class Query:
+  def __init__(self, search, list_to_append=list):
+    self.data = None
+    
+    coin = LunarCrush(search)
+    if coin.data is None:
+      coin = CoinGecko(search)
+      if coin.data is not None:
+        self.data = coin.data
+        if list_to_append is not None:
+          list_to_append.append(coin.data)
+    else:
+      self.data = coin.data
+      if list_to_append is not None:
+        list_to_append.append(coin.data)
+    
+
+
 class LunarCrush:
   def __init__(self, symbol):
     self.api_key = self.load_api_key()
     self.interval = 'day'
     self.data = None
 
-    self.data = self.get_data(symbol, self.interval)
+    self.data = self.get_data(symbol.lower(), self.interval)
 
       
-
   def get_data(self, symbol, interval='day'):
     ## interval = ('day', 'hour')
     url = self.set_url(self.api_key, symbol, interval)
@@ -92,6 +109,7 @@ class LunarCrush:
     return ("%.10f" % num).rstrip('0').rstrip('.')
 
 
+
 class CoinGecko:
   def __init__(self, query):
     self.data = None
@@ -162,3 +180,5 @@ class CoinGecko:
         return coin_list
         
     return None
+
+
