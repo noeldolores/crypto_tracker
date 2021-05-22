@@ -8,7 +8,7 @@ import pickle
 
 
 class Query:
-  def __init__(self, search, list_to_append=list):
+  def __init__(self, search, list_to_append=None):
     self.data = None
     
     coin = LunarCrush(search)

@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 def run_search(coin_query):
-  coin = crypto_lookup.Query(coin_query, None)
+  coin = crypto_lookup.Query(coin_query)
   if coin.data is None:
     result = None
     bad_query = coin_query
