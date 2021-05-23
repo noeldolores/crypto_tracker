@@ -8,6 +8,7 @@ How to use:<br/>
 <li>In your project directory create a file named '.env', and on the first line write: LUNARCRUSH_API_KEY=YOURKEYHERE</li>
 <li>Create and activate a virtual environment and run: pip install -r requirements.txt</li>
 <li>In your project directory create a file named 'favorites.txt'. On each line, add Cryptos that you would like to auto-load upon visiting the */favorites page of your Flask app.</li>
+<li>In your project directory rename the file 'config-example.py' to 'config.py', and follow the instructions at the top of the file.</li>
 <li>To use the command-line interface, run: ./command_line.py</li>
 <li>To start the Flask interface, with a virtual environment run: source /start_app.sh</li>
 </ol>
