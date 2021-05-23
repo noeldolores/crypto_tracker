@@ -6,7 +6,8 @@ import crypto_lookup
 
 
 app = Flask(__name__)
-app.secret_key = "test"
+app.config.from_object("config.DevelopmentConfig")
+
 
 def run_search(coin_query):
   coin = crypto_lookup.Query(coin_query)
