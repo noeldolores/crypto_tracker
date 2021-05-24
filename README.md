@@ -52,8 +52,8 @@ Flask App Interface:<br/>
 <br/>
 Search Result
 
-![Image of Flask Output](https://github.com/noeldolores/crypto_tracker/blob/master/images/flask_example_search.png)
+![Image of Flask Output]()
 <br/>
 Favorites Page
 
-![Image of Flask Output](https://github.com/noeldolores/crypto_tracker/blob/master/images/flask_example_favorites.png)
+![Image of Flask Output]()
