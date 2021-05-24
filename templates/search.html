@@ -12,10 +12,10 @@
       <div class="form-inline">
         <h1>Cryptocurrency</h1>
         <div class="form-group">
-          <input type="text" class="line-input" name="coin_query" placeholder="coin name or symbol" required>
+          <input type="text" class="line-input" name="coin_query" placeholder="coin name or symbol">
         </div>
       <div class="form-group">                                                        
-        <button type="submit" class="btn btn-light text-primary btn-block" value="Submit">SEARCH</button>
+        <button type="submit" class="btn btn-light text-primary btn-block">SEARCH</button>
       </div>
     </form>
 
@@ -47,6 +47,9 @@
           <td class="num" align="right">{{ result['percent_change_30d'] }}%</td>
         </tr>
       </table>
+      <div class="form-group">                                                        
+        <button type="submit" class="btn btn-light text-primary btn-block" name="add_favorites" value={{ result['symbol'] }}>Add Favorites</button>
+      </div>
       {% endif %}
     </div>
 

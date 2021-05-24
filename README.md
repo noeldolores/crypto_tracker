@@ -7,7 +7,6 @@ How to use:<br/>
 <li>Create a free account over at <a href="https://lunarcrush.com/">LunarCrush</a>, and generate your API Key <a href="https://lunarcrush.com/developers/docs">here.</a>.</li>
 <li>In your project directory create a file named '.env', and on the first line write: LUNARCRUSH_API_KEY=YOURKEYHERE</li>
 <li>Create and activate a virtual environment and run: pip install -r requirements.txt</li>
-<li>In your project directory create a file named 'favorites.txt'. On each line, add Cryptos that you would like to auto-load upon visiting the */favorites page of your Flask app.</li>
 <li>In your project directory rename the file 'config-example.py' to 'config.py', and follow the instructions at the top of the file.</li>
 <li>To use the command-line interface, run: ./command_line.py</li>
 <li>To start the Flask interface, with a virtual environment run: source /start_app.sh</li>
@@ -20,7 +19,8 @@ Current features:<br/>
 <li>Uses <a href="https://lunarcrush.com/dashboard">LunarCrush</a> to query cryptocurrency information, outputting results to the command line or Flask app.</li>
 <li>Ability to pass a either a single currency or a list of currencies as an argument for the command line output feature.</li>
 <li>Scrapes <a href="https://coinmarketcap.com/">CoinMarketCap</a> when necessary to allow searching by crypto's name or symbol/shorthand.</li>
-<li>The */favorites page reads a list of currencies from your local favorites.txt file to create a dashboard for viewing your choices with ease.</li>
+<li>The */favorites page reads a list of currencies from your local favorites.txt file to create a dashboard for viewing your choices with ease. This file is created automatically in the project root.</li>
+<li>You can now add and remove cryptocurrencies from your favorites file from within the Flask interface.</li>
 <li>Uses CoinGecko as a backup database for coins not on LunarCrush.</li>
 <li>Implemented threading to speed up API query speeds for Flask and CLI.</li>
 </ol><br/>
@@ -28,7 +28,6 @@ Current features:<br/>
 Planned features:<br/>
 <ol>
 <li>Add a 'go to favorites' button.</li>
-<li>Add the ability to add and delete currencies from your 'favorites' within the Flask app interface.</li>
 <li>Database to track historical data of tracked currencies from within an expanded dashboard.</li>
 <li>Connect additional APIs to source data for currencies not available through LunarCrush.</li>
 <li>Remove need for an API key using a suite of key-less sources.</li>
