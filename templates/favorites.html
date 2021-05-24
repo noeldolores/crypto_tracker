@@ -31,7 +31,7 @@
             <tbody>
               <tr>
                 <td align="left">Current Price</td>
-                <td align="right">{{favorites_list[i]['price']}}</td>
+                <td align="right" id="price">{{favorites_list[i]['price']}}</td>
               </tr>
               <tr>
                 <td align="left">24-Hour Change</td>
@@ -59,15 +59,20 @@
     </div>
 
     <script>
-      document.getElementById("myFrame").onload = function() {output()};
-
+      wait_for =document.getElementById("myFrame")
+      if (wait_for != null) {
+        wait_for.onload = function() {output()};
+      }
+      
       function output() {
         var targets = document.getElementsByClassName('num');
         for( var i in targets ) {
-          if (parseFloat(targets[i].innerText) / 100.0 >= 0) {
-            targets[i].style.color = "green";
-          } else {
-            targets[i].style.color = "red";
+          if (targets[i].style != undefined) {
+            if (parseFloat(targets[i].innerText) / 100.0 >= 0) {
+              targets[i].style.color = "green";
+            } else {
+              targets[i].style.color = "red";
+            }
           }
         }
       }
