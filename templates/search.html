@@ -26,30 +26,40 @@
         {% endif %}
       {% else %}
       <table style="width: 100%;" class="result" border="2" id="myFrame">
-        <tr>
-          <th align="left">{{ result['name'] }}</th>
-          <th align="right">{{ result['symbol'] }}</th> 
-        </tr>
-        <tr>
-          <td align="left">Current Price: </td>
-          <td align="right">{{ result['price'] }}</td>
-        </tr>
-        <tr>
-          <td align="left">24-Hour Change:</td>
-          <td class="num" align="right">{{ result['percent_change_24h'] }}%</td>
-        </tr>
-        <tr>
-          <td align="left">7-Day Change:</td>
-          <td class="num" align="right">{{ result['percent_change_7d'] }}%</td>
-        </tr>
-        <tr>
-          <td align="left">30-Day Change:</td>
-          <td class="num" align="right">{{ result['percent_change_30d'] }}%</td>
-        </tr>
+        <thead>
+          <tr>
+            <th align="left">{{ result['name'] }}</th>
+            <th align="right">{{ result['symbol'] }}</th> 
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="left">Current Price: </td>
+            <td align="right">{{ result['price'] }}</td>
+          </tr>
+          <tr>
+            <td align="left">24-Hour Change:</td>
+            <td class="num" align="right">{{ result['percent_change_24h'] }}%</td>
+          </tr>
+          <tr>
+            <td align="left">7-Day Change:</td>
+            <td class="num" align="right">{{ result['percent_change_7d'] }}%</td>
+          </tr>
+          <tr>
+            <td align="left">30-Day Change:</td>
+            <td class="num" align="right">{{ result['percent_change_30d'] }}%</td>
+          </tr>
+        <tbody>
+        {% if in_favorites == False %}
+          <tfoot>
+            <tr><td align='center' colspan='2'>
+              <form method='post'>                                                       
+                <button type="submit" class="add_btn" name="add_favorites" value={{ result['symbol'] }}>Add {{ result['symbol'] }}</button>
+              </form>
+            </td></tr>
+          </tfoot>
+        {% endif %}
       </table>
-      <div class="form-group">                                                        
-        <button type="submit" class="btn btn-light text-primary btn-block" name="add_favorites" value={{ result['symbol'] }}>Add Favorites</button>
-      </div>
       {% endif %}
     </div>
 

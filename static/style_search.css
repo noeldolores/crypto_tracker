@@ -72,3 +72,11 @@ th {
 .module-2 {
   margin: 4em;
 }
+
+.add_btn {
+  vertical-align: middle;
+  width: 100%;
+  height: 30px;
+  color:#ffffff;
+  background-color: #2b1616;
+}

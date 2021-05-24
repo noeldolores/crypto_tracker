@@ -43,12 +43,19 @@ def home():
 def search():
   result = None
   bad_query = None
+  in_favorites = False
 
   if request.method == 'POST':
     if request.form['coin_query'] != "":
       session.pop('result', None)
       coin_query = request.form['coin_query']
       result, bad_query = run_search(coin_query)
+
+      with open('favorites.txt', 'r') as f:
+        temp_list = f.read().lower().splitlines()
+        if result['name'].lower() in temp_list or result['symbol'].lower() in temp_list:
+          in_favorites = True
+
     elif "add_favorites" in request.form:
       to_add = request.form['add_favorites']
       with open('favorites.txt', 'a') as f:
@@ -64,7 +71,8 @@ def search():
       bad_query = session['bad_query']
       session.pop('result', None)
 
-  return render_template('search.html', result=result, bad_query=bad_query)
+
+  return render_template('search.html', result=result, bad_query=bad_query, in_favorites=in_favorites)
 
 
 @app.route("/favorites", methods=['POST', 'GET'])
