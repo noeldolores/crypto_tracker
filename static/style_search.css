@@ -32,7 +32,8 @@ html, body{
 }
 .result {
   margin: auto;
-  width: 100%;
+  width: 412px;
+  height: 208px;
   max-width: 650px;
   text-align: center;
   word-wrap: break-word;
