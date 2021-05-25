@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, url_for, redirect, session
 from threading import Thread
 from pathlib import Path
-from werkzeug.utils import redirect
+#from werkzeug.utils import redirect
 import crypto_lookup
 
 
@@ -27,10 +27,11 @@ def reorder_list(correct_order=list, thread_output=list):
   for i in range(len(correct_order)):
     coin_check = correct_order[i].lower()
     for coin in thread_output:
-      if coin['name'].lower() == coin_check or coin['symbol'].lower() == coin_check or str(coin['id']).lower() == coin_check:
+      if str(coin['name']).lower() == coin_check or str(coin['symbol']).lower() == coin_check or str(coin['id']).lower() == coin_check:
         corrected_list.append(coin)
         
   return corrected_list
+
 
 
 @app.route("/")
@@ -44,18 +45,19 @@ def search():
   bad_query = None
   in_favorites = False
 
+  if 'favorites' not in session:
+    with open(FAVORITES, 'r') as f:
+      session['favorites'] = f.read().lower().splitlines()
+      
   if request.method == 'POST':
-    print(request.form)
     if 'coin_query' in request.form:
       if request.form['coin_query'] != "":
         session.pop('result', None)
         coin_query = request.form['coin_query']
         result, bad_query = run_search(coin_query)
 
-        with open(FAVORITES, 'r') as f:
-          favorites = f.read().lower().splitlines()
-          if str(result['name']).lower() in favorites or str(result['symbol']).lower() in favorites:
-            in_favorites = True
+        if str(result['name']).lower() in session['favorites'] or str(result['symbol']).lower() in session['favorites']:
+          in_favorites = True
 
     elif "add_favorites" in request.form:
       to_add = request.form['add_favorites']
@@ -76,6 +78,9 @@ def search():
 
 @app.route("/favorites", methods=['POST', 'GET'])
 def favorites():
+  if 'favorites' in session:
+    session.pop('favorites', None)
+
   if request.method == 'POST':
     if 'remove_favorite' in request.form:
       to_remove = request.form['remove_favorite'].lower().split(',')
