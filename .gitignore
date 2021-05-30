@@ -146,4 +146,4 @@ coingecko.txt
 .vscode
 config.py
 /old
-*.db
+website/database.db
