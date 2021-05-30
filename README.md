@@ -49,5 +49,6 @@ Command Line Interface
 <br/>
 Flask App Interface:<br/>
 <br/>
+
 ![Image of Flask Output](https://github.com/noeldolores/crypto_tracker/blob/master/images/flask_example.png)
 <br/>
