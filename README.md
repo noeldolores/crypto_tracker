@@ -9,7 +9,7 @@ How to use:<br/>
 <li>Create and activate a virtual environment and run: pip install -r requirements.txt</li>
 <li>In your project directory rename the file 'config-example.py' to 'config.py', and follow the instructions at the top of the file.</li>
 <li>To use the command-line interface, run: ./command_line.py</li>
-<li>To start the Flask interface, with a virtual environment run: source /start_app.sh</li>
+<li>To start the Flask interface, activate your virtual environment and run: /main.py</li>
 </ol>
 
 
@@ -17,21 +17,20 @@ How to use:<br/>
 Current features:<br/>
 <ol>
 <li>Uses <a href="https://lunarcrush.com/dashboard">LunarCrush</a> to query cryptocurrency information, outputting results to the command line or Flask app.</li>
-<li>Ability to pass a either a single currency or a list of currencies as an argument for the command line output feature.</li>
 <li>Scrapes <a href="https://coinmarketcap.com/">CoinMarketCap</a> when necessary to allow searching by crypto's name or symbol/shorthand.</li>
-<li>The */favorites page reads a list of currencies from your local favorites.txt file to create a dashboard for viewing your choices with ease. This file is created automatically in the project root.</li>
-<li>You can now add and remove cryptocurrencies from your favorites file from within the Flask interface.</li>
-<li>Uses CoinGecko as a backup database for coins not on LunarCrush.</li>
+<li>Uses CoinGecko as a backup API for coins not on LunarCrush.</li>
+<li>Ability to pass a either a single currency or a list of currencies as an argument for the command line output feature.</li>
+<li>A Flask App interface that uses a database to hold tracked coins on a per user basis by using SQLAlchemy.</li>
 <li>Implemented threading to speed up API query speeds for Flask and CLI.</li>
 </ol><br/>
 
 Planned features:<br/>
 <ol>
-<li>Add a 'go to favorites' button.</li>
 <li>Database to track historical data of tracked currencies from within an expanded dashboard.</li>
 <li>Connect additional APIs to source data for currencies not available through LunarCrush.</li>
 <li>Remove need for an API key using a suite of key-less sources.</li>
 <li>Add ability to set owned quantities in favorites, and calculate 'portolio' total.</li>
+<li>Host the website!</li>
 </ol><br/>
 
 ## Example Outputs:<br/>
