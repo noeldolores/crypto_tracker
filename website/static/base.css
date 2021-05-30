@@ -1,0 +1,10 @@
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 112%; /* Bottom of button */
+  right: 0;
+  margin-left: -20%; /* More to the left */
+}
