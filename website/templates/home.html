@@ -46,7 +46,7 @@
           {% if user %}
             {% if user.is_authenticated %}
               <form method='POST'>
-                <button type="submit" class="btn btn-secondary btn-sm btn-block btn-dark" value={{ result['symbol'] }} name="add_favorites">Add {{ result['symbol'] }}</button>
+                <button type="submit" class="btn btn-secondary btn-sm btn-block" style="background-color:#075A01"value={{ result['symbol'] }} name="add_favorites">Add {{ result['name'] }}</button>
               </form>
             {% endif %}
           {% endif %}
@@ -97,7 +97,7 @@
           </div>
         </div>
         <form method='POST'>
-            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark" value={{ favorites[i]['symbol'] }} name='remove_favorite'>Remove</button>
+            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark" value={{ favorites[i]['symbol'] }} name='remove_favorite'>Remove {{ favorites[i]['symbol'] }}</button>
           </form>
       </div>
     {% endfor %}
