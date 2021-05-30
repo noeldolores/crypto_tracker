@@ -106,7 +106,9 @@ class LunarCrush:
 
 
   def convert_sci_to_dec(self, num):
-    return ("%.10f" % num).rstrip('0').rstrip('.')
+    max_dig = 10
+    int_len = len(str(int(num)))
+    return (f"%.{max(max_dig, int_len) - min(max_dig, int_len)}f" % num).rstrip('0').rstrip('.')
 
 
 
@@ -179,5 +181,3 @@ class CoinGecko:
         return coin_list
         
     return None
-
-
