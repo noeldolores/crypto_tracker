@@ -1,4 +1,4 @@
-from flask import Blueprint, request, flash, session, render_template, redirect, url_for
+from flask import Blueprint, request, flash, session, render_template, redirect, url_for, escape
 from flask_login import current_user
 from threading import Thread
 from datetime import datetime
@@ -66,7 +66,7 @@ def favorites_check(to_check):
       if str(to_check['name']).lower() in session['favorites'] or str(to_check['symbol']).lower() in session['favorites']:
         return True
   return False
-  
+
 
 def coinGeckoDB_query(search):
   coinName_check = CoinGeckoDb.query.filter_by(coinName=search).first()
@@ -131,8 +131,8 @@ def home():
         for currency in current_user.currencies:
           favorites_list.append(currency.name)
         session['favorites'] = sorted(favorites_list, key=str.lower)
-      else:
-        sorted_favorites = load_favorites_data(session['favorites'])
+
+      sorted_favorites = load_favorites_data(session['favorites'])
     else:
       flash("Your Dashboard is empty! Use the search bar to find and add cryptocurrencies.", category='error')
   else:
@@ -140,7 +140,7 @@ def home():
 
   if request.method == 'POST':
     if 'search' in request.form:
-      result, bad_query = currency_search(request.form['search'])
+      result, bad_query = currency_search(str(escape(request.form['search'])))
       
       if current_user.is_authenticated:
         in_favorites = favorites_check(result)
