@@ -1,6 +1,6 @@
 # A personal use crypto tracker.
 
-## This is the offline version of the app <a href="https://www.searchcrypto.app/">SearchCrypto</a>
+## This is the offline version of the app <a href="https://www.searchcrypto.app/login">SearchCrypto</a>
 
 <br/>
 How to use:<br/>
