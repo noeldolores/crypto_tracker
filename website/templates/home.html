@@ -56,9 +56,10 @@
   </div>
 {% endif %}
 <div class="p-2"></div>
+{% if favorites != None %}
 <div class="container-fluid p-2 mb-5 rounded" style="background-color:#f5f5f5">
   <div class="row justify-content-around">
-  {% if favorites != None %}
+  
     {%for i in range(0, favorites|length)%}
       <div class="col-lg-3">
         <div class="row p-3 border justify-content-center bg-dark text-white">

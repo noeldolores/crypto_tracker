@@ -7,3 +7,7 @@
 .col-lg-3 {
   margin: 24px;
 }
+
+*:not(.container) {
+  box-sizing: border-box;
+}

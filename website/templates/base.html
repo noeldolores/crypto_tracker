@@ -43,10 +43,11 @@
               <div class="dropdown-container">
                 <a class="nav-link dropdown-toggle text-white" id="navbarDropdown" role="button" data-toggle="dropdown" href="#">Sources</a>
                 <div role="menu" class="dropdown-menu">
-                  <a class="dropdown-item" href="https://lunarcrush.com/developers/docs">LunarCrush</a>
-                  <a class="dropdown-item" href="https://coinmarketcap.com/api/documentation/v1/">CoinMarketCap</a>
+                  <a class="dropdown-item" href="https://lunarcrush.com/developers/docs" target="_blank">LunarCrush</a>
+                  <a class="dropdown-item" href="https://coinmarketcap.com/api/documentation/v1/" target="_blank">CoinMarketCap</a>
+                  <a class="dropdown-item" href="https://www.coingecko.com/en/api#explore-api" target="_blank">CoinGecko</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="https://github.com/noeldolores/crypto_tracker">Github Repo</a>
+                  <a class="dropdown-item" href="https://github.com/noeldolores/crypto_tracker" target="_blank">Github Repo</a>
                 </div>
               </div>
               <a class="nav-item nav-link text-white" id="logout" href="/logout">Logout</a>
@@ -55,10 +56,11 @@
               <div class="dropdown-container">
                 <a class="nav-link dropdown-toggle text-white" id="navbarDropdown" role="button" data-toggle="dropdown" href="#">Sources</a>
                 <div role="menu" class="dropdown-menu">
-                  <a class="dropdown-item" href="https://lunarcrush.com/developers/docs">LunarCrush</a>
-                  <a class="dropdown-item" href="https://coinmarketcap.com/api/documentation/v1/">CoinMarketCap</a>
+                  <a class="dropdown-item" href="https://lunarcrush.com/developers/docs" target="_blank">LunarCrush</a>
+                  <a class="dropdown-item" href="https://coinmarketcap.com/api/documentation/v1/" target="_blank">CoinMarketCap</a>
+                  <a class="dropdown-item" href="https://www.coingecko.com/en/api#explore-api" target="_blank">CoinGecko</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="https://github.com/noeldolores/crypto_tracker">Github Repo</a>
+                  <a class="dropdown-item" href="https://github.com/noeldolores/crypto_tracker" target="_blank">Github Repo</a>
                 </div>
               </div>
               <a class="nav-item nav-link text-white" id="signup" href="/signup">Sign Up</a>
@@ -68,6 +70,11 @@
       </div>
       <div>
         <form class="form-inline" method="POST">
+          {% if user %}
+            {% if user.is_authenticated %}
+            <div class="navbar-text"style="text-align:left; margin-right: 16px;">Last Updated: {{time}}</div>
+            {% endif %}
+          {% endif %}
             <input class="form-control mr-sm-2 line-input" type="search" name="search" placeholder="Search" aria-label="Search" required>
             <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
         </form>

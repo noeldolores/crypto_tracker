@@ -18,7 +18,7 @@ Current features:<br/>
 <ol>
 <li>Uses <a href="https://lunarcrush.com/dashboard">LunarCrush</a> to query cryptocurrency information, outputting results to the command line or Flask app.</li>
 <li>Scrapes <a href="https://coinmarketcap.com/">CoinMarketCap</a> when necessary to allow searching by crypto's name or symbol/shorthand.</li>
-<li>Uses CoinGecko as a backup API for coins not on LunarCrush.</li>
+<li>Uses <a href=https://www.coingecko.com/en/api#explore-api>CoinGecko</a> as a backup API for coins not on LunarCrush.</li>
 <li>Ability to pass a either a single currency or a list of currencies as an argument for the command line output feature.</li>
 <li>A Flask App interface that uses a database to hold tracked coins on a per user basis by using SQLAlchemy.</li>
 <li>Implemented threading to speed up API query speeds for Flask and CLI.</li>
