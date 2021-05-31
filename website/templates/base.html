@@ -104,6 +104,59 @@
     {% endwith %}
 
     <div class = "container">
+
+    {% if result %}
+    <div class="container-fluid p-5" id="coin_card">
+      <div class="row justify-content-around">
+        <div class="col">
+          <div class="row p-3 border justify-content-center bg-dark text-white">
+            {{ result['name'] }} ({{ result['symbol'] }})
+          </div>
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            Current Value
+            </div>
+            <div class="col p-3 border bg-dark text-white">
+            {{ result['price'] }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            24 Hours
+            </div>
+            <div class="col p-3 border bg-dark num">
+            {{ result['percent_change_24h'] }}%
+            </div>
+          </div>
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            7 Days
+            </div>
+            <div class="col p-3 border bg-dark num">
+            {{ result['percent_change_7d'] }}%
+            </div>
+          </div>
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            30 Days
+            </div>
+            <div class="col p-3 border bg-dark num">
+            {{ result['percent_change_30d'] }}%
+            </div>
+          </div>
+          {% if user %}
+            {% if user.is_authenticated %}
+              {% if in_favorites == False %}
+                <form method='POST'>
+                  <button type="submit" class="btn btn-secondary btn-sm btn-block" style="background-color:#075A01"value={{ result['symbol'] }} name="add_favorites">Add {{ result['name'] }}</button>
+                </form>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
     {% block content%}
     {% endblock %}
     </div>

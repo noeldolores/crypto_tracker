@@ -7,6 +7,7 @@ from .models import Currency, CoinGeckoDb
 from . import crypto_lookup
 
 
+
 views = Blueprint('views', __name__)
 
 
@@ -118,6 +119,11 @@ def remove_from_favorites(to_remove):
 
 
 @views.route('/', methods=['GET', 'POST'])
+def redirect_to_home():
+  return redirect(url_for('views.home'))
+
+
+@views.route('/home', methods=['GET', 'POST'])
 def home():
   result = None
   bad_query = None
