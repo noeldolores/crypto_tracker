@@ -140,9 +140,7 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# Personal favorites.txt
-favorites.txt
-coingecko.txt
+# Project specific
 .vscode
 config.py
 /old
