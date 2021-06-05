@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - CryptoSearch{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+  $(".checkbox-menu").on("change", "input[type='checkbox']", function() {
+    $(this).closest("li").toggleClass("active", this.checked);
+  });
+</script>
+
+<script type="text/javascript">
+  $(document).on('click', '.allow-focus', function (e) {
+    e.stopPropagation();
+  });
+</script>
+
+<script type="text/javascript">
+  wait_for = document.getElementById("j_load")
+  if (wait_for != null) {
+    wait_for.onload = function() {checkbox()};
+  }
+  function checkbox() {
+    var targets = document.getElementsByClassName('j_check');
+    for( var i in targets ) {
+      if (targets[i].value.includes("True")) {
+        targets[i].checked = true;
+      }
+    }
+  }
+</script>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='usersettings.css') }}"/>
+{% if user %}
+  {% if user.is_authenticated %}
+  <form method="POST" id="j_load">
+    <h3 align="center" class="text-white p-5">Settings</h3>
+
+    <div class="container-fluid">
+      <div class="row justify-content-around">
+        <div class="col-s-12 col-md-6 col-lg-3 topcol">
+          {% include "timezone.html"%}
+        </div>
+        <div class="col-s-12 col-md-6 col-lg-3 topcol">
+          {% include "currency.html"%}
+        </div>
+        <div class="col-s-12 col-md-12 col-lg-3 topcol">
+          {% include "dashboardsettings.html"%}
+        </div>
+      </div>
+    </div>
+    <br />
+
+  {% if user.role != "guest" %}
+    <div class="form-group">
+      <label for="email" class="text-white">Email Address</label>
+      <input type="email" class="form-control" id="email" name="email" placeholder="{{email}}"/>
+    </div>
+
+    <div class="form-group">
+      <label for="firstName" class="text-white">Display Name</label>
+      <input type="text" class="form-control" id="firstName" name="firstName" placeholder="{{firstName}}"/>
+    </div>
+
+    <div class="form-group">
+      <label for="password1" class="text-white">New Password</label>
+      <input type="password" autocomplete="new-password" class="form-control" id="password1" name="password1" placeholder="Enter password"/>
+    </div>
+
+    <div class="form-group">
+      <label for="password2" class="text-white">Confirm Password</label>
+      <input type="password" autocomplete="new-password" class="form-control" id="password2" name="password2" placeholder="Enter password"/>
+    </div>
+
+    <br />
+  {% endif %}
+    <div class="container-fluid">
+      <div class="row justify-content-around">
+        <div class="col-s-4 col-md-4 col-lg-5">
+          <button type="submit" class="btn btn-primary" name="save" id="savebutton">Save</button>
+        </div>
+        <div class="col-s-4 col-md-4 col-lg-5">
+          <button type="submit" class="btn btn-danger" name="delete" value="delete" id="deletebutton">Delete Account</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  {% endif %}
+{% endif %}
+<script>checkbox();</script>
+{% endblock %}

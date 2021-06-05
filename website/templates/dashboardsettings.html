@@ -1,0 +1,55 @@
+<label for="dashboardOptions" class="text-white">Dasboard (not implemented)</label>
+<div class="dropdown">
+  <button class="btn btn-default dropdown-toggle custom-select" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    <span class="caret">Layout | Market | Owned</span>
+  </button>
+  <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1">
+  
+    <li >
+      <label>
+        <input class="j_check" type="radio" name="layout" value="{{ settings['dashboard']['grid'] }} grid"> Grid
+      </label>
+    </li>
+    
+    <li >
+      <label>
+        <input class="j_check" type="radio" name="layout" value="{{ settings['dashboard']['table'] }} table"> Table
+      </label>
+    </li>
+
+    <div class="dropdown-divider"></div>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="24hours" value={{ settings['dashboard']['24hours'] }}> 24 Hours %
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="7days" value={{ settings['dashboard']['7days'] }}> 7 Days %
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="30days" value={{ settings['dashboard']['30days'] }}> 30 Days %
+      </label>
+    </li>
+
+    <div class="dropdown-divider"></div>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="quantity" value={{ settings['dashboard']['quantity'] }}> Quantity
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="netvalue" value={{ settings['dashboard']['netvalue'] }}> Quantity Value
+      </label>
+    </li>
+    
+  </ul>
+</div>

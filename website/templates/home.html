@@ -1,58 +1,74 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
-{% block content%}
 
+{% block title %}Home - CryptoSearch{% endblock %}
+
+{% block content%}
 <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 
 <div class="p-2"></div>
-{% if favorites != None %}
-<div class="container-fluid p-2 mb-5 rounded" style="background-color:#f5f5f5">
-  <div class="row justify-content-around">
-  
-    {%for i in range(0, favorites|length)%}
-      <div class="col-lg-3">
-        <div class="row p-3 border justify-content-center bg-dark text-white">
-          {{ favorites[i]['name'] }} ({{ favorites[i]['symbol'] }})
-        </div>
-        <div class="row">
-          <div class="col p-3 border bg-dark text-white">
-          Current Value
+{% if user %}
+  {% if user.is_authenticated %}
+  <h2 align="center" class="text-white p-3">Dashboard ({{ settings['displaycurrency'] }})</h2>
+    {% if favorites != None %}
+    <div class="container-fluid p-2 mb-5 rounded" style="background-color:#faffff">
+      <div class="row justify-content-around">
+      {%for i in range(0, favorites|length)%}
+        <div class="col-md-4 col-lg-3">
+          <div class="row p-3 border justify-content-center bg-dark text-white">
+            {{ favorites[i]['name'] }} ({{ favorites[i]['symbol'] }})
           </div>
-          <div class="col p-3 border bg-dark text-white">
-          {{ favorites[i]['price'] }}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            Current
+            </div>
+            <div class="col p-3 border bg-dark text-white">
+            {{ favorites[i]['price'] }}
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col p-3 border bg-dark text-white">
-          24 Hours
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            24 Hours
+            </div>
+            <div class="col p-3 border bg-dark num">
+            {{ favorites[i]['percent_change_24h'] }}%
+            </div>
           </div>
-          <div class="col p-3 border bg-dark num">
-          {{ favorites[i]['percent_change_24h'] }}%
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            7 Days
+            </div>
+            <div class="col p-3 border bg-dark num">
+            {{ favorites[i]['percent_change_7d'] }}%
+            </div>
           </div>
-        </div>
-        <div class="row">
-          <div class="col p-3 border bg-dark text-white">
-          7 Days
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            30 Days
+            </div>
+            <div class="col p-3 border bg-dark num">
+            {{ favorites[i]['percent_change_30d'] }}%
+            </div>
           </div>
-          <div class="col p-3 border bg-dark num">
-          {{ favorites[i]['percent_change_7d'] }}%
-          </div>
-        </div>
-        <div class="row">
-          <div class="col p-3 border bg-dark text-white">
-          30 Days
-          </div>
-          <div class="col p-3 border bg-dark num">
-          {{ favorites[i]['percent_change_30d'] }}%
-          </div>
-        </div>
-        <form method='POST'>
+          <form method='POST'>
             <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark" value={{ favorites[i]['symbol'] }} name='remove_favorite'>Remove {{ favorites[i]['symbol'] }}</button>
           </form>
+        </div>
+      {% endfor %}
+    {% endif %}
+    </div>
+  {% else %}
+    <h4 align="center" class="text-white p-3">Guest Account</h4>
+    <form method='POST'>
+      <div class="container">
+        <div class="row">
+          <div class="col text-center">
+            <button type="submit" class="btn btn-primary" name="guest" value="guest">Try it out!</button>
+          </div>
+        </div>
       </div>
-    {% endfor %}
+    </form>
   {% endif %}
-  </div>
+{% endif %}
 </div>
 
 {% endblock %}

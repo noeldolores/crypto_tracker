@@ -1,32 +1,87 @@
 <!DOCTYPE html>
-
 <html>
   <head>
+    <title>{% block title %}CryptoSearch{% endblock %}</title>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
-    <meta name="description" content="">
+    <meta name="description" content="A Multi-Market Cryptocurrency Tracking Dashboard for Speculators and Investors powered by CoinGecko and LunarCrush.">
+    <link rel="canonical" href="https://www.searchcrypto.app/home" >
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
       crossorigin="anonymous"
     />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}"/>
+
+    <link rel="shortcut icon" href="/static/favicon/favicon.ico">
+    <link rel="icon" sizes="16x16 32x32 64x64" href="/static/faviconfavicon.ico">
+    <link rel="icon" type="image/png" sizes="196x196" href="/static/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="160x160" href="/static/favicon-160.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/favicon-96.png">
+    <link rel="icon" type="image/png" sizes="64x64" href="/static/favicon-64.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16.png">
+    <link rel="apple-touch-icon" href="/static/favicon-57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/static/favicon-114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/static/favicon-72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/static/favicon-144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/static/favicon-60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/static/favicon-120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/favicon-76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/favicon-152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon-180.png">
+    <meta name="msapplication-TileColor" content="#FFFFFF">
+    <meta name="msapplication-TileImage" content="/static/favicon/favicon-144.png">
+    <meta name="msapplication-config" content="/static/favicon/browserconfig.xml">
+
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
       crossorigin="anonymous"
-    />
-    <link 
-      rel="stylesheet" href="{{ url_for('static', filename='base.css') }}"
-    />
-    <title>{% block title %}Home{% endblock %}</title>
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      wait_for = document.getElementById("coin_card")
+      if (wait_for != null) {
+        wait_for.onload = function() {
+          output();
+        }
+      }
+      function output() {
+        var targets = document.getElementsByClassName('num');
+        for( var i in targets ) {
+          if (targets[i].style != undefined) {
+            if (parseFloat(targets[i].innerText) / 100.0 >= 0) {
+              targets[i].style.color = "green";
+            } else {
+              targets[i].style.color = "red";
+            }
+          }
+        }
+      }
+    </script>
+
+    {% block script %}{% endblock %}
   </head>
 
   <body style="background-color:#19334d">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="http://127.0.0.1:5000/">Cryptocurrency</a>
+      <a class="navbar-brand" href="https://www.searchcrypto.app">SearchCrypto</a>
       <button
         class="navbar-toggler"
         type="button"
@@ -39,15 +94,14 @@
         <div class="navbar-nav">
           {% if user %}
             {% if user.is_authenticated %}
-              <a class="nav-item nav-link text-white" id="home" href="/">Home</a>
+              <a class="nav-item nav-link text-white" id="home" href="/usersettings">{{user.firstName}}</a>
               <div class="dropdown-container">
                 <a class="nav-link dropdown-toggle text-white" id="navbarDropdown" role="button" data-toggle="dropdown" href="#">Sources</a>
                 <div role="menu" class="dropdown-menu">
-                  <a class="dropdown-item" href="https://lunarcrush.com/developers/docs" target="_blank">LunarCrush</a>
-                  <a class="dropdown-item" href="https://coinmarketcap.com/api/documentation/v1/" target="_blank">CoinMarketCap</a>
                   <a class="dropdown-item" href="https://www.coingecko.com/en/api#explore-api" target="_blank">CoinGecko</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="https://github.com/noeldolores/crypto_tracker" target="_blank">Github Repo</a>
+                  <a class="dropdown-item" href="https://coinmarketcap.com/api/documentation/v1/" target="_blank">CoinMarketCap</a>
+                  <a class="dropdown-item" href="https://lunarcrush.com/developers/docs" target="_blank">LunarCrush</a>
+                  <a class="dropdown-item" href="https://www.ecb.europa.eu/home/html/index.en.html" target="_blank">ECB</a>
                 </div>
               </div>
               <a class="nav-item nav-link text-white" id="logout" href="/logout">Logout</a>
@@ -56,11 +110,10 @@
               <div class="dropdown-container">
                 <a class="nav-link dropdown-toggle text-white" id="navbarDropdown" role="button" data-toggle="dropdown" href="#">Sources</a>
                 <div role="menu" class="dropdown-menu">
-                  <a class="dropdown-item" href="https://lunarcrush.com/developers/docs" target="_blank">LunarCrush</a>
-                  <a class="dropdown-item" href="https://coinmarketcap.com/api/documentation/v1/" target="_blank">CoinMarketCap</a>
                   <a class="dropdown-item" href="https://www.coingecko.com/en/api#explore-api" target="_blank">CoinGecko</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="https://github.com/noeldolores/crypto_tracker" target="_blank">Github Repo</a>
+                  <a class="dropdown-item" href="https://coinmarketcap.com/api/documentation/v1/" target="_blank">CoinMarketCap</a>
+                  <a class="dropdown-item" href="https://lunarcrush.com/developers/docs" target="_blank">LunarCrush</a>
+                  <a class="dropdown-item" href="https://www.ecb.europa.eu/home/html/index.en.html" target="_blank">ECB</a>
                 </div>
               </div>
               <a class="nav-item nav-link text-white" id="signup" href="/signup">Sign Up</a>
@@ -72,7 +125,9 @@
         <form class="form-inline" method="POST">
           {% if user %}
             {% if user.is_authenticated %}
-            <div class="navbar-text"style="text-align:left; margin-right: 16px;">Last Updated: {{time}}</div>
+              {% if show_time %}
+                <a class="nav-link text-white"style="text-align:left; margin-right: 16px;" href="/usersettings" data-toggle="tooltip" title={{ settings['timezone'] }}>Last Updated: {{time}}</a>
+                {% endif %}
             {% endif %}
           {% endif %}
             <input class="form-control mr-sm-2 line-input" type="search" name="search" placeholder="Search" aria-label="Search" required>
@@ -114,7 +169,15 @@
           </div>
           <div class="row">
             <div class="col p-3 border bg-dark text-white">
-            Current Value
+            {% if user %}
+              {% if user.is_authenticated %}
+              Current Value ({{displaycurrency}})
+              {% else %}
+              Current Value (USD)
+              {% endif %}
+            {% else %}
+            Current Value (USD)
+            {% endif %}
             </div>
             <div class="col p-3 border bg-dark text-white">
             {{ result['price'] }}
@@ -161,40 +224,14 @@
     {% endblock %}
     </div>
 
-    <script
-      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-      crossorigin="anonymous"
-    ></script>
-    <script>
-      wait_for = document.getElementById("coin_card")
-      if (wait_for != null) {
-        wait_for.onload = function() {output()};
-      }
-      
-      function output() {
-        var targets = document.getElementsByClassName('num');
-        for( var i in targets ) {
-          if (targets[i].style != undefined) {
-            if (parseFloat(targets[i].innerText) / 100.0 >= 0) {
-              targets[i].style.color = "green";
-            } else {
-              targets[i].style.color = "red";
-            }
-          }
-        }
-      }
-      output();
-    </script>
+    <script>output();</script>
   </body>
+  <br /><br />
+  <div class="footerfix"></div>
+  <footer>
+      <a style="color: white">Created by Noel Dolores - 2021</a>
+      <a style="color: white; margin-left: 1%" href="mailto: contact@searchcrypto.app" target="_blank">Email</a>
+      <a style="color: white; margin-left: 1%" href="https://github.com/noeldolores/SearchCryptoApp/issues/" target="_blank">Report Issues</a>
+      <a style="color: white; margin-left: 1%" href="https://www.linkedin.com/in/noeldolores/" target="_blank">LinkedIn</a>
+  </footer>
 </html>

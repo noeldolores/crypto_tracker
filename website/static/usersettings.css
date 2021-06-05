@@ -1,0 +1,53 @@
+.checkbox-menu li label {
+  display: block;
+  padding: 7px 10px;
+  clear: both;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.checkbox-menu li input {
+  margin: 0px 5px;
+  top: 2px;
+  position: relative;
+  background-color: white;
+}
+
+.checkbox-menu li.active label {
+  background-color: #cbcbff;
+  font-weight:bold;
+}
+
+.checkbox-menu li label:hover,
+.checkbox-menu li label:focus {
+  background-color: #007bff;
+  color:white;
+}
+
+.checkbox-menu li.active label:hover,
+.checkbox-menu li.active label:focus {
+  background-color: #b8b8ff;
+}
+
+#dropdownMenu1 {
+  background-color: white;
+}
+
+.dropdown-menu {
+  width: 100%;
+}
+
+#deletebutton {
+  width: 100%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+}
+#savebutton {
+  width: 100%;
+  margin-top: 5%;
+  margin-bottom: 15%;
+}
+
+.topcol {
+  margin-top: 10px;
+}

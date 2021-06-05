@@ -4,7 +4,33 @@
 
 .dropdown-menu {
   position: absolute;
-  top: 112%; /* Bottom of button */
+  top: 112%;
   right: 0;
-  margin-left: -20%; /* More to the left */
+}
+
+html, body { 
+  margin: 0;
+  padding: 0;
+}
+html {
+  height: 100%;
+}
+body {
+  position: relative;
+  min-height: 100%;
+}
+.wrapper
+{
+  position: relative;
+  overflow: auto;
+}
+.footerfix{height:4rem;}
+footer{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  text-align: center;
+  background-color: #292b2c;
 }
