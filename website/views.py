@@ -251,9 +251,9 @@ def home():
 def usersettings():
   show_time = False
   if current_user.is_authenticated:
-    if current_user.settings is not None:
+    try:
       user_settings = json.loads(current_user.settings)
-    else:
+    except:
       user_settings = {
         'timezone':'UTC',
         'displaycurrency':'USD',
@@ -267,18 +267,6 @@ def usersettings():
           'netvalue':False
         }
       }
-    # if str(user_settings['timezone']) == None:
-    #   user_settings['timezone'] = "UTC"
-    #   current_user.settings = json.dumps(user_settings)
-    #   db.session.commit()
-    #   user_settings = json.loads(current_user.settings)
-    #   flash('Timezone reset!', category='success')
-    # if str(user_settings['displaycurrency']) == None:
-    #   user_settings['displaycurrency'] = "USD"
-    #   current_user.settings = json.dumps(user_settings)
-    #   db.session.commit()
-    #   user_settings = json.loads(current_user.settings)
-    #   flash('Display Currency reset!', category='success')
 
     if request.method == 'POST':
       if 'search' in request.form:
@@ -294,7 +282,7 @@ def usersettings():
           return render_template('usersettings.html', result=result, bad_query=bad_query, time=time, show_time=show_time,
                                   user=current_user, firstName=current_user.firstName, email=current_user.email, settings=user_settings)
 
-
+      changes = []
       timezone = str((request.form.get('timezone')))
       displaycurrency = str((request.form.get('displaycurrency')))
       
@@ -303,39 +291,6 @@ def usersettings():
         firstName = str((request.form.get('firstName')))
         password1 = str((request.form.get('password1')))
         password2 = str((request.form.get('password2')))
-
-        layout = request.form.getlist('layout')
-        if len(layout) > 0:
-          for selection in layout:
-            if 'grid' in selection:
-              user_settings['dashboard']['grid'] = True
-              user_settings['dashboard']['table'] = False
-            else:
-              user_settings['dashboard']['grid'] = False
-              user_settings['dashboard']['table'] = True
-          current_user.settings = json.dumps(user_settings)
-          db.session.commit()
-          user_settings = json.loads(current_user.settings)
-
-        _24hours = request.form.get('24hours')
-        _7days = request.form.get('7days')
-        _30days = request.form.get('30days')
-        quantity = request.form.get('quantity')
-        netvalue = request.form.get('netvalue')
-        dash_settings = {'24hours':_24hours, '7days':_7days, '30days':_30days, 'quantity':quantity, 'netvalue':netvalue}
-
-        commit = True
-        for key, value in dash_settings.items():
-          if value is not None:
-            user_settings['dashboard'][key] = True
-          else:
-            user_settings['dashboard'][key] = False
-
-        if commit:
-          current_user.settings = json.dumps(user_settings)
-          db.session.commit()
-          user_settings = json.loads(current_user.settings)
-
 
         if len(email) == 0:
           pass
@@ -347,8 +302,7 @@ def usersettings():
             flash('Email already exists.', category='error')
           else:
             current_user.email = email
-            db.session.commit()
-            user_settings = json.loads(current_user.settings)
+            changes.append("Email")
 
         if len(firstName) == 0:
           pass
@@ -358,8 +312,7 @@ def usersettings():
           flash(f'Name is already {firstName}', category='error')
         else:
           current_user.firstName = firstName
-          db.session.commit()
-          user_settings = json.loads(current_user.settings)
+          changes.append("Display Name")
 
         if len(password1) == 0:
           pass
@@ -371,50 +324,63 @@ def usersettings():
           flash('New password must be different than current password.', category='error')
         else:
           current_user.password=generate_password_hash(password1, method='sha256')
-          db.session.commit()
-          user_settings = json.loads(current_user.settings)
+          changes.append("Password")
 
-      if timezone != "None" and str(user_settings['timezone']) != "None":
-        if str(user_settings['timezone']) == timezone or timezone == "":
-          pass
-        else:
-          user_settings['timezone'] = timezone
-          current_user.settings = json.dumps(user_settings)
-          db.session.commit()
-          user_settings = json.loads(current_user.settings)
-          flash('Timezone updated!', category='success')
-      elif timezone == "None" and str(user_settings['timezone']) != "None":
-        pass
-      else:
-        user_settings['timezone'] = "UTC"
-        current_user.settings = json.dumps(user_settings)
-        db.session.commit()
-        user_settings = json.loads(current_user.settings)
-        flash('Timezone reset!', category='success')
+        layout = request.form.getlist('layout')
+        for selection in layout:
+          if 'grid' in selection:
+            if user_settings['dashboard']['grid'] != True:
+              user_settings['dashboard']['grid'] = True
+              user_settings['dashboard']['table'] = False
+              changes.append('Grid View')
+          else:
+            if user_settings['dashboard']['table'] != True:
+              user_settings['dashboard']['grid'] = False
+              user_settings['dashboard']['table'] = True
+              changes.append('Table View')
 
-      if displaycurrency != "None" and str(user_settings['displaycurrency']) != "None":
-        if str(user_settings['displaycurrency']) == displaycurrency:
-          pass
-        elif displaycurrency == "":
-          pass
-        else:
-          user_settings['displaycurrency'] = displaycurrency
-          current_user.settings = json.dumps(user_settings)
-          db.session.commit()
-          user_settings = json.loads(current_user.settings)
-          flash('Display Currency updated!', category='success')
-      elif displaycurrency == "None" and str(user_settings['displaycurrency']) != "None":
-        pass
-      else:
-        user_settings['displaycurrency'] ="USD"
-        current_user.settings = json.dumps(user_settings)
-        db.session.commit()
-        user_settings = json.loads(current_user.settings)
-        flash('Display Currency reset!', category='success')
+        _24hours = request.form.get('24hours')
+        _7days = request.form.get('7days')
+        _30days = request.form.get('30days')
+        quantity = request.form.get('quantity')
+        netvalue = request.form.get('netvalue')
+        dash_settings = {'24hours':_24hours, '7days':_7days, '30days':_30days, 'quantity':quantity, 'netvalue':netvalue}
+
+        for key, value in dash_settings.items():
+          if value is not None:
+            if user_settings['dashboard'][key] != True:
+              user_settings['dashboard'][key] = True
+              changes.append(key.capitalize() )
+          else:
+            if user_settings['dashboard'][key] != False:
+              user_settings['dashboard'][key] = False
+              changes.append(key.capitalize() )
+
+        if timezone != "None":
+          if timezone != user_settings['timezone']:
+            user_settings['timezone'] = timezone
+            changes.append('Timezone')
+        elif user_settings['timezone'] == "None":
+          user_settings['timezone'] = "UTC"
+          changes.append('Timezone')
+        
+        if displaycurrency != "None":
+          if timezone != user_settings['displaycurrency']:
+            user_settings['displaycurrency'] = displaycurrency
+            changes.append('Currency')
+        elif user_settings['displaycurrency'] == "None":
+          user_settings['displaycurrency'] = "USD"
+          changes.append('Currency')
 
       if current_user.role != "guest":
         if 'delete' in request.form:
           return redirect(url_for('views.deleteaccount'))
+
+      if len(changes) > 0:
+        current_user.settings = json.dumps(user_settings)
+        db.session.commit()
+        user_settings = json.loads(current_user.settings)
+        flash(f'Settings Saved: {", ".join(changes)}', category='success')
 
     return render_template('usersettings.html', user=current_user, firstName=current_user.firstName, email=current_user.email, settings=user_settings)
 
