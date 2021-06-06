@@ -27,10 +27,10 @@ $(document).ready(function(){
   <h1 align="center" class="text-white p-3">Dashboard ({{ settings['displaycurrency'] }})</h1>
   <br />
     {% if favorites != None %}
-    <div class="container-fluid p-2 mb-5 rounded" style="background-color:#faffff">
+    <div class="container-fluid p-2 mb-5 rounded custom-border" style="background-color:#ffffff">
       <div class="row justify-content-around">
       {%for i in range(0, favorites|length)%}
-        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-2">
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
 
           <div class="row p-3 border justify-content-center bg-dark text-white">
             {{ favorites[i][0]['name'] }} ({{ favorites[i][0]['symbol'] }})
