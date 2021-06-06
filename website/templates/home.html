@@ -1,56 +1,106 @@
 {% extends "base.html" %}
 
 {% block title %}Home - CryptoSearch{% endblock %}
+{% block script %}
+<script>
+var a;
+$(document).ready(function(){
+  $('.modal-quant').click(function(){
+    a=$(this).attr('value');
+  });
+});
 
+$(document).ready(function(){
+  $('#savequant').click(function() {
+    $('#savequant').attr('value', a);
+  });
+});
+
+</script>
+{% endblock script %}
 {% block content%}
 <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
 
 <div class="p-2"></div>
 {% if user %}
   {% if user.is_authenticated %}
-  <h2 align="center" class="text-white p-3">Dashboard ({{ settings['displaycurrency'] }})</h2>
+  <h1 align="center" class="text-white p-3">Dashboard ({{ settings['displaycurrency'] }})</h1>
     {% if favorites != None %}
     <div class="container-fluid p-2 mb-5 rounded" style="background-color:#faffff">
       <div class="row justify-content-around">
       {%for i in range(0, favorites|length)%}
-        <div class="col-md-4 col-lg-3">
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-2">
+
           <div class="row p-3 border justify-content-center bg-dark text-white">
-            {{ favorites[i]['name'] }} ({{ favorites[i]['symbol'] }})
+            {{ favorites[i][0]['name'] }} ({{ favorites[i][0]['symbol'] }})
           </div>
+
           <div class="row">
             <div class="col p-3 border bg-dark text-white">
             Current
             </div>
             <div class="col p-3 border bg-dark text-white">
-            {{ favorites[i]['price'] }}
+            {{ favorites[i][0]['price'] }}
             </div>
           </div>
+
+          {% if settings['dashboard']['24hours'] %}
           <div class="row">
             <div class="col p-3 border bg-dark text-white">
             24 Hours
             </div>
             <div class="col p-3 border bg-dark num">
-            {{ favorites[i]['percent_change_24h'] }}%
+            {{ favorites[i][0]['percent_change_24h'] }}%
             </div>
           </div>
+          {% endif %}
+
+          {% if settings['dashboard']['7days'] %}
           <div class="row">
             <div class="col p-3 border bg-dark text-white">
             7 Days
             </div>
             <div class="col p-3 border bg-dark num">
-            {{ favorites[i]['percent_change_7d'] }}%
+            {{ favorites[i][0]['percent_change_7d'] }}%
             </div>
           </div>
+          {% endif %}
+
+          {% if settings['dashboard']['30days'] %}
           <div class="row">
             <div class="col p-3 border bg-dark text-white">
             30 Days
             </div>
             <div class="col p-3 border bg-dark num">
-            {{ favorites[i]['percent_change_30d'] }}%
+            {{ favorites[i][0]['percent_change_30d'] }}%
             </div>
           </div>
+          {% endif %}
+
+          {% if settings['dashboard']['quantity'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            Owned
+            </div>
+            <button type="button" class="col p-3 border bg-dark modal-quant text-white text-left" value={{favorites[i][0]['symbol']}},{{i}} data-toggle="modal" href="#exampleModal">
+            {{ favorites[i][1] }}
+            </button>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['netvalue'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white">
+            Value
+            </div>
+            <div class="col p-3 border bg-dark text-white">
+            {{ favorites[i][2] }}
+            </div>
+          </div>
+          {% endif %}
+
           <form method='POST'>
-            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark" value={{ favorites[i]['symbol'] }} name='remove_favorite'>Remove {{ favorites[i]['symbol'] }}</button>
+            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark" value={{ favorites[i][0]['symbol'] }} name='remove_favorite'>Remove {{ favorites[i][0]['symbol'] }}</button>
           </form>
         </div>
       {% endfor %}
@@ -70,5 +120,28 @@
   {% endif %}
 {% endif %}
 </div>
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Enter Quantity</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method='POST'>
+        <div class="modal-body">
+          <div class="form-group">
+            <input type="number" step="any" min="0" class="form-control" name="quantity" placeholder="0.000"/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit"  class="btn btn-primary" id="savequant" name="to_save">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

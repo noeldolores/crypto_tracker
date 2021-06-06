@@ -34,3 +34,38 @@ footer{
   text-align: center;
   background-color: #292b2c;
 }
+
+.container-fluid {
+  max-width: 90%;
+}
+
+
+.col-xs-6,
+.col-sm-9 {
+  margin: 2em;
+}
+
+.col-md-4 {
+  min-width: 38%;
+  margin-top: 1em;
+}
+
+.col-lg-5 {
+  margin: 1em;
+  min-width: 30%;
+}
+
+.col-xl-2,
+.col-xl-3 {
+  margin: 2em;
+  min-width: 20%;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.col-xxl-2 {
+  margin: 2em;
+  min-width: 20%;
+  padding-left: 0px;
+  padding-right: 0px;
+}

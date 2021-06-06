@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A Multi-Market Cryptocurrency Tracking Dashboard for Speculators and Investors powered by CoinGecko and LunarCrush.">
-    <link rel="canonical" href="https://www.searchcrypto.app/home" >
+    <link rel="canonical" href="/home" >
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
     <link
@@ -158,70 +158,71 @@
       {% endif %}
     {% endwith %}
 
-    <div class = "container">
+    <div class = "container-fluid">
 
-    {% if result %}
-    <div class="container-fluid p-5" id="coin_card">
-      <div class="row justify-content-around">
-        <div class="col">
-          <div class="row p-3 border justify-content-center bg-dark text-white">
-            {{ result['name'] }} ({{ result['symbol'] }})
-          </div>
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white">
-            {% if user %}
-              {% if user.is_authenticated %}
-              Current Value ({{displaycurrency}})
+      {% if result %}
+      <div class="container-fluid p-5" id="coin_card">
+        <div class="row justify-content-around">
+          <div class="col-4">
+            <div class="row p-3 border justify-content-center bg-dark text-white">
+              {{ result['name'] }} ({{ result['symbol'] }})
+            </div>
+            <div class="row">
+              <div class="col p-3 border bg-dark text-white">
+              {% if user %}
+                {% if user.is_authenticated %}
+                Current Value ({{settings['displaycurrency']}})
+                {% else %}
+                Current Value (USD)
+                {% endif %}
               {% else %}
               Current Value (USD)
               {% endif %}
-            {% else %}
-            Current Value (USD)
-            {% endif %}
+              </div>
+              <div class="col p-3 border bg-dark text-white">
+              {{ result['price'] }}
+              </div>
             </div>
-            <div class="col p-3 border bg-dark text-white">
-            {{ result['price'] }}
+            <div class="row">
+              <div class="col p-3 border bg-dark text-white">
+              24 Hours
+              </div>
+              <div class="col p-3 border bg-dark num">
+              {{ result['percent_change_24h'] }}%
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white">
-            24 Hours
+            <div class="row">
+              <div class="col p-3 border bg-dark text-white">
+              7 Days
+              </div>
+              <div class="col p-3 border bg-dark num">
+              {{ result['percent_change_7d'] }}%
+              </div>
             </div>
-            <div class="col p-3 border bg-dark num">
-            {{ result['percent_change_24h'] }}%
+            <div class="row">
+              <div class="col p-3 border bg-dark text-white">
+              30 Days
+              </div>
+              <div class="col p-3 border bg-dark num">
+              {{ result['percent_change_30d'] }}%
+              </div>
             </div>
-          </div>
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white">
-            7 Days
-            </div>
-            <div class="col p-3 border bg-dark num">
-            {{ result['percent_change_7d'] }}%
-            </div>
-          </div>
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white">
-            30 Days
-            </div>
-            <div class="col p-3 border bg-dark num">
-            {{ result['percent_change_30d'] }}%
-            </div>
-          </div>
-          {% if user %}
-            {% if user.is_authenticated %}
-              {% if in_favorites == False %}
-                <form method='POST'>
-                  <button type="submit" class="btn btn-secondary btn-sm btn-block" style="background-color:#075A01"value={{ result['symbol'] }} name="add_favorites">Add {{ result['name'] }}</button>
-                </form>
+            {% if user %}
+              {% if user.is_authenticated %}
+                {% if in_favorites == False %}
+                  <form method='POST'>
+                    <button type="submit" class="btn btn-secondary btn-sm btn-block" style="background-color:#075A01"value={{ result['symbol'] }} name="add_favorites">Add {{ result['name'] }}</button>
+                  </form>
+                {% endif %}
               {% endif %}
             {% endif %}
-          {% endif %}
+          </div>
         </div>
       </div>
-    </div>
-    {% endif %}
-    {% block content%}
-    {% endblock %}
+      {% endif %}
+      {% block content%}
+      {% endblock %}
+
     </div>
 
     <script>output();</script>

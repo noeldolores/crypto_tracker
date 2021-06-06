@@ -14,28 +14,36 @@ from . import crypto_lookup
 views = Blueprint('views', __name__)
 
 
-def reorder_list(correct_order=list, thread_output=list):
-  corrected_list = []
-  for i in range(len(correct_order)):
-    coin_check = correct_order[i].lower()
-    for coin in thread_output:
-      if str(coin['name']).lower() == coin_check or str(coin['symbol']).lower() == coin_check or str(coin['id']).lower() == coin_check:
-        corrected_list.append(coin)
-  return corrected_list
-
 
 def load_favorites_data(current_favorites):
   if len(current_user.currencies) > 0:
     verbose_favorites = []
     threads = []
     for i in range(len(current_favorites)):
-      coin_query = coinGeckoDB_query(current_favorites[i])
+      coin_query = coinGeckoDB_query(current_favorites[i][0])
       process = Thread(target=crypto_lookup.Query, args=[(coin_query.coinSymbol, coin_query.coinID), verbose_favorites])
       process.start()
       threads.append(process)
     for process in threads:
       process.join()
     return reorder_list(current_favorites, verbose_favorites)
+
+
+def reorder_list(correct_order=list, thread_output=list):
+  corrected_list = []
+  usd_rate = convert_currency(str(session['displaycurrency']))
+  
+  for i in range(len(correct_order)):
+    coin_check = correct_order[i][0].lower()
+    coin_quant = float(correct_order[i][1])
+
+    for coin in thread_output:
+      if str(coin['name']).lower() == coin_check or str(coin['symbol']).lower() == coin_check or str(coin['id']).lower() == coin_check:
+        num = float(coin['price'])/float(usd_rate)
+        coin['price'] = crypto_lookup.DigitLimit(num, max_len=10).out
+        quant_value = crypto_lookup.DigitLimit(coin_quant * num, max_len=10).out
+        corrected_list.append((coin, coin_quant, quant_value))
+  return corrected_list
 
 
 def currency_search(to_search):
@@ -65,9 +73,12 @@ def currency_search(to_search):
 
 
 def favorites_check(to_check):
+  check_list = []
+  for item in session['favorites']:
+    check_list.append(item[0])
   if to_check:
     if len(current_user.currencies) > 0:
-      if str(to_check['name']).lower() in session['favorites'] or str(to_check['symbol']).lower() in session['favorites']:
+      if str(to_check['name']).lower() in check_list or str(to_check['symbol']).lower() in check_list:
         return True
   return False
 
@@ -86,14 +97,15 @@ def coinGeckoDB_query(search):
 def add_to_favorites(to_add):
   currency = to_add.lower()
   try:
-    new_currency = Currency(name=currency, user_id=current_user.id, quantity=0, value=0)
+    quantity = 0
+    new_currency = Currency(name=currency, user_id=current_user.id, quantity=quantity, value=0)
     db.session.add(new_currency)
     db.session.commit()
     if 'favorites' in session:
       temp_list = session['favorites']
     else:
       temp_list = []
-    temp_list.append(currency)
+    temp_list.append((currency, quantity))
     session['favorites'] = sorted(temp_list)
     return True
   except Exception as e:
@@ -142,10 +154,13 @@ def home():
   sorted_favorites = None
   show_time = False
   usd_rate = 1
+  utc_now = pytz.utc.localize(datetime.utcnow())
 
   if current_user.is_authenticated:
     if current_user.settings is not None:
       user_settings = json.loads(current_user.settings)
+      if 'displaycurrency' not in session:
+        session['displaycurrency'] = user_settings['displaycurrency']
     else:
       user_settings = {
         'timezone':'UTC',
@@ -160,24 +175,23 @@ def home():
           'netvalue':False
         }
       }
-
-    usd_rate = convert_currency(str(user_settings['displaycurrency']))
+    time = utc_now.astimezone(pytz.timezone(str(user_settings['timezone']))).strftime("%m/%d/%Y %H:%M:%S")
 
     if len(current_user.currencies) > 0:
       show_time = True
       if 'favorites' not in session:
         favorites_list = []
         for currency in current_user.currencies:
-          favorites_list.append(currency.name)
-        session['favorites'] = sorted(favorites_list, key=str.lower)
+          favorites_list.append((currency.name, currency.quantity))
+        session['favorites'] = sorted(favorites_list)
       sorted_favorites = load_favorites_data(session['favorites'])
-      for item in sorted_favorites:
-        num = float(item['price'])/float(usd_rate)
-        item['price'] = crypto_lookup.DigitLimit(num, max_len=10).out
     else:
       session.pop('_flashes', None)
       flash("Your Dashboard is empty! Use the search bar to find and add cryptocurrencies.", category='error')
   else:
+    time = utc_now.strftime("%m/%d/%Y %H:%M:%S")
+    user_settings = None
+
     if 'first_visit' not in session:
       session['first_visit'] = True
       session.pop('_flashes', None)
@@ -190,6 +204,7 @@ def home():
     if 'search' in request.form:
       result, bad_query = currency_search(request.form['search'])
       if result is not None:
+        usd_rate = convert_currency(str(user_settings['displaycurrency']))
         num = float(result['price'])/float(usd_rate)
         result['price'] = crypto_lookup.DigitLimit(num, max_len=10).out
 
@@ -223,6 +238,30 @@ def home():
         flash("Oops! Something went wrong!", category='error')
       return redirect(url_for('views.home'))
 
+    elif 'quantity' in request.form:
+      to_save = request.form['to_save'].split(',')
+      quantity = request.form['quantity']
+
+      location = int(to_save[1])
+      _coin = sorted_favorites[location][0]
+      old_value = float(sorted_favorites[location][2])
+
+      to_update = Currency.query.join(User, Currency.user_id==current_user.id).filter(Currency.name==to_save[0].lower()).first()
+      to_update.quantity = quantity
+      to_update.value = float(_coin['price']) * float(quantity)
+
+      db.session.commit()
+
+      sorted_favorites[location] = (_coin, quantity, to_update.value)
+
+      session.pop('favorites', None)
+      return render_template('home.html', user=current_user, result=result, bad_query=bad_query, in_favorites=in_favorites, favorites=sorted_favorites, time=time, show_time=show_time, settings = user_settings)
+       # test = current_user.currencies.filter(Currency.name==to_save[0].lower()).first()
+      # print(test.name)
+      #backref=db.backref('items', lazy='dynamic')
+
+
+
     if 'guest' in request.form:
       if not current_user.is_authenticated:
         email = 'guest@searchcrypto.app'
@@ -236,12 +275,12 @@ def home():
             login_user(user, remember=True)
             return redirect(url_for('views.home'))
 
-  utc_now = pytz.utc.localize(datetime.utcnow())
-  if current_user.is_authenticated:
-    time = utc_now.astimezone(pytz.timezone(str(user_settings['timezone']))).strftime("%m/%d/%Y %H:%M:%S")
-  else:
-    time = utc_now.strftime("%m/%d/%Y %H:%M:%S")
-    user_settings = None
+  # utc_now = pytz.utc.localize(datetime.utcnow())
+  # if current_user.is_authenticated:
+  #   time = utc_now.astimezone(pytz.timezone(str(user_settings['timezone']))).strftime("%m/%d/%Y %H:%M:%S")
+  # else:
+  #   time = utc_now.strftime("%m/%d/%Y %H:%M:%S")
+  #   user_settings = None
 
   return render_template('home.html', user=current_user, result=result, bad_query=bad_query, in_favorites=in_favorites, favorites=sorted_favorites, time=time, show_time=show_time, settings = user_settings)
 
@@ -356,21 +395,21 @@ def usersettings():
               user_settings['dashboard'][key] = False
               changes.append(key.capitalize() )
 
-        if timezone != "None":
-          if timezone != user_settings['timezone']:
-            user_settings['timezone'] = timezone
-            changes.append('Timezone')
-        elif user_settings['timezone'] == "None":
-          user_settings['timezone'] = "UTC"
+      if timezone != "None":
+        if timezone != user_settings['timezone']:
+          user_settings['timezone'] = timezone
           changes.append('Timezone')
-        
-        if displaycurrency != "None":
-          if timezone != user_settings['displaycurrency']:
-            user_settings['displaycurrency'] = displaycurrency
-            changes.append('Currency')
-        elif user_settings['displaycurrency'] == "None":
-          user_settings['displaycurrency'] = "USD"
+      elif user_settings['timezone'] == "None":
+        user_settings['timezone'] = "UTC"
+        changes.append('Timezone')
+      
+      if displaycurrency != "None":
+        if timezone != user_settings['displaycurrency']:
+          user_settings['displaycurrency'] = displaycurrency
           changes.append('Currency')
+      elif user_settings['displaycurrency'] == "None":
+        user_settings['displaycurrency'] = "USD"
+        changes.append('Currency')
 
       if current_user.role != "guest":
         if 'delete' in request.form:
