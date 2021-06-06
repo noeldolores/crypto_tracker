@@ -35,15 +35,6 @@ footer{
   background-color: #292b2c;
 }
 
-.container-fluid {
-  max-width: 90%;
-}
-
-
-.col-xs-6,
-.col-sm-9 {
-  margin: 2em;
-}
 
 .col-md-4 {
   min-width: 38%;

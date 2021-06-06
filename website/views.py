@@ -240,18 +240,18 @@ def home():
 
     elif 'quantity' in request.form:
       to_save = request.form['to_save'].split(',')
-      quantity = request.form['quantity']
+      quantity = float(request.form['quantity'])
 
       location = int(to_save[1])
       _coin = sorted_favorites[location][0]
 
       to_update = Currency.query.join(User, Currency.user_id==current_user.id).filter(Currency.name==to_save[0].lower()).first()
       to_update.quantity = quantity
-      to_update.value = float(_coin['price']) * float(quantity)
+      to_update.value = float(_coin['price']) * quantity
 
       db.session.commit()
 
-      sorted_favorites[location] = (_coin, float(quantity), to_update.value)
+      sorted_favorites[location] = (_coin, quantity, to_update.value)
 
       session.pop('favorites', None)
       return render_template('home.html', user=current_user, result=result, bad_query=bad_query, in_favorites=in_favorites, favorites=sorted_favorites, time=time, show_time=show_time, settings = user_settings)

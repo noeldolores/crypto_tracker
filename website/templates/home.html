@@ -25,6 +25,7 @@ $(document).ready(function(){
 {% if user %}
   {% if user.is_authenticated %}
   <h1 align="center" class="text-white p-3">Dashboard ({{ settings['displaycurrency'] }})</h1>
+  <br />
     {% if favorites != None %}
     <div class="container-fluid p-2 mb-5 rounded" style="background-color:#faffff">
       <div class="row justify-content-around">
