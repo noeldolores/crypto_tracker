@@ -6,36 +6,65 @@ import json
 from currency_converter import CurrencyConverter
 import pytz
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
-from .models import Currency, CoinGeckoDb, User
-from . import crypto_lookup
+from . import db, crypto_lookup, cache
+from .models import User, CurrencyCache, Currency, CoinGeckoDb
+
 
 
 views = Blueprint('views', __name__)
 
 
-
-def load_favorites_data(current_favorites):
+def load_favorites_data(current_favorites): #list[(coinname, coinquantity)]
   if len(current_user.currencies) > 0:
     verbose_favorites = []
+    api_lookup = []
     threads = []
     for i in range(len(current_favorites)):
       coin_query = coinGeckoDB_query(current_favorites[i][0])
-      process = Thread(target=crypto_lookup.Query, args=[(coin_query.coinSymbol, coin_query.coinID), verbose_favorites])
-      process.start()
-      threads.append(process)
-    for process in threads:
-      process.join()
+
+      load_cache = cache.CurrencyCache_Query(coin_query)
+      if load_cache is not None and "old" not in str(load_cache): #found something to load
+        cached_coin = {
+          'name': load_cache.coinName,
+          'symbol': load_cache.coinSymbol,
+          'id': load_cache.coinSymbol,
+          'price':load_cache.price,
+          'percent_change_24h':load_cache.change24h,
+          'percent_change_7d':load_cache.change7d,
+          'percent_change_30d':load_cache.change30d
+        }
+        verbose_favorites.append(cached_coin)
+      else: #didnt find or found but too old
+        process = Thread(target=crypto_lookup.Query, args=[(coin_query.coinSymbol, coin_query.coinID), api_lookup])
+        process.start()
+        threads.append(process)
+
+    if len(threads) > 0:
+      for process in threads:
+        process.join()
+    if len(api_lookup) > 0:
+      for item in api_lookup:
+        cache_check = cache.CurrencyCache_IdLookup(name=item['name'], symbol=item['symbol'])
+        if cache_check: #exists, needs update
+          cache.CurrencyCache_Update(cache_check, item)
+        else: #doesn't exist, needs add
+          cache.CurrencyCache_Add(item)
+
+      verbose_favorites.extend(api_lookup)
+
     return reorder_list(current_favorites, verbose_favorites)
 
 
 def reorder_list(correct_order=list, thread_output=list):
   corrected_list = []
   usd_rate = convert_currency(str(session['displaycurrency']))
-  
+
   for i in range(len(correct_order)):
     coin_check = correct_order[i][0].lower()
-    coin_quant = float(correct_order[i][1])
+    try:
+      coin_quant = float(correct_order[i][1])
+    except:
+      coin_quant = 0.0
 
     for coin in thread_output:
       if str(coin['name']).lower() == coin_check or str(coin['symbol']).lower() == coin_check or str(coin['id']).lower() == coin_check:
@@ -69,17 +98,19 @@ def currency_search(to_search):
     coin = crypto_lookup.Query((coin_query.coinSymbol, coin_query.coinID))
     result = coin.data
     bad_query = None
+
   return result, bad_query
 
 
 def favorites_check(to_check):
   check_list = []
-  for item in session['favorites']:
-    check_list.append(item[0])
-  if to_check:
-    if len(current_user.currencies) > 0:
-      if str(to_check['name']).lower() in check_list or str(to_check['symbol']).lower() in check_list:
-        return True
+  if 'favorites' in session:
+    for item in session['favorites']:
+      check_list.append(item[0])
+    if to_check:
+      if len(current_user.currencies) > 0:
+        if str(to_check['name']).lower() in check_list or str(to_check['symbol']).lower() in check_list:
+          return True
   return False
 
 
@@ -97,8 +128,14 @@ def coinGeckoDB_query(search):
 def add_to_favorites(to_add):
   currency = to_add.lower()
   try:
+    cache_check = cache.CurrencyCache_IdLookup(name=currency, symbol=currency)
+    if cache_check:
+      cache_id = cache_check.id
+    else:
+      cache_id = None
+
     quantity = 0
-    new_currency = Currency(name=currency, user_id=current_user.id, quantity=quantity, value=0)
+    new_currency = Currency(name=currency, user_id=current_user.id, quantity=quantity, value=0, cache_id=cache_id)
     db.session.add(new_currency)
     db.session.commit()
     if 'favorites' in session:
@@ -134,10 +171,11 @@ def remove_from_favorites(to_remove):
 
 def convert_currency(convert_to):
   c = CurrencyConverter(decimal=True)
+  base = 1
   try:
-    return c.convert(1, 'USD', convert_to)
+    return c.convert(base, 'USD', convert_to)
   except:
-    return 1
+    return base
 
 
 
@@ -150,8 +188,8 @@ def redirect_to_home():
 def home():
   result = None
   bad_query = None
-  in_favorites = False
   sorted_favorites = None
+  in_favorites = False
   show_time = False
   usd_rate = 1
   utc_now = pytz.utc.localize(datetime.utcnow())
@@ -182,9 +220,10 @@ def home():
       if 'favorites' not in session:
         favorites_list = []
         for currency in current_user.currencies:
-          favorites_list.append((currency.name, currency.quantity))
+          favorites_list.append((currency.name, json.loads(str(currency.quantity))))
         session['favorites'] = sorted(favorites_list)
       sorted_favorites = load_favorites_data(session['favorites'])
+
     else:
       session.pop('_flashes', None)
       flash("Your Dashboard is empty! Use the search bar to find and add cryptocurrencies.", category='error')
@@ -207,6 +246,12 @@ def home():
         usd_rate = convert_currency(str(user_settings['displaycurrency']))
         num = float(result['price'])/float(usd_rate)
         result['price'] = crypto_lookup.DigitLimit(num, max_len=10).out
+
+        cache_check = cache.CurrencyCache_IdLookup(name=result['name'], symbol=result['symbol'])
+        if cache_check:
+          cache.CurrencyCache_Update(cache_check, result)
+        else:
+          cache.CurrencyCache_Add(result)
 
       if current_user.is_authenticated:
         show_time = True
@@ -251,14 +296,10 @@ def home():
 
       db.session.commit()
 
-      sorted_favorites[location] = (_coin, quantity, to_update.value)
+      sorted_favorites[location] = (_coin, quantity, crypto_lookup.DigitLimit(to_update.value, max_len=10).out)
 
       session.pop('favorites', None)
       return render_template('home.html', user=current_user, result=result, bad_query=bad_query, in_favorites=in_favorites, favorites=sorted_favorites, time=time, show_time=show_time, settings = user_settings)
-       # test = current_user.currencies.filter(Currency.name==to_save[0].lower()).first()
-      # print(test.name)
-      #backref=db.backref('items', lazy='dynamic')
-
 
 
     if 'guest' in request.form:
@@ -274,12 +315,6 @@ def home():
             login_user(user, remember=True)
             return redirect(url_for('views.home'))
 
-  # utc_now = pytz.utc.localize(datetime.utcnow())
-  # if current_user.is_authenticated:
-  #   time = utc_now.astimezone(pytz.timezone(str(user_settings['timezone']))).strftime("%m/%d/%Y %H:%M:%S")
-  # else:
-  #   time = utc_now.strftime("%m/%d/%Y %H:%M:%S")
-  #   user_settings = None
 
   return render_template('home.html', user=current_user, result=result, bad_query=bad_query, in_favorites=in_favorites, favorites=sorted_favorites, time=time, show_time=show_time, settings = user_settings)
 
@@ -323,7 +358,7 @@ def usersettings():
       changes = []
       timezone = str((request.form.get('timezone')))
       displaycurrency = str((request.form.get('displaycurrency')))
-      
+
       if current_user.role != "guest" and 'search' not in request.form:
         email = str((request.form.get('email')))
         firstName = str((request.form.get('firstName')))
@@ -401,7 +436,7 @@ def usersettings():
       elif user_settings['timezone'] == "None":
         user_settings['timezone'] = "UTC"
         changes.append('Timezone')
-      
+
       if displaycurrency != "None":
         if timezone != user_settings['displaycurrency']:
           user_settings['displaycurrency'] = displaycurrency

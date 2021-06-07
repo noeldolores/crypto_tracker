@@ -1,6 +1,8 @@
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask_login import UserMixin
-from sqlalchemy.dialects.mysql import JSON
+from sqlalchemy.dialects.mysql import JSON, DECIMAL
+from sqlalchemy.orm import backref
+from datetime import datetime
 from . import db
 from flask import current_app as app
 
@@ -12,7 +14,7 @@ class User(db.Model, UserMixin):
   password = db.Column(db.String(150))
   firstName = db.Column(db.String(150))
   settings = db.Column(JSON)
-  currencies = db.relationship('Currency')
+  currencies = db.relationship('Currency', backref=db.backref('user'))
 
   def get_reset_token(self, expires_sec=1800):
     s = Serializer(app.config['SECRET_KEY'], expires_sec)
@@ -28,12 +30,26 @@ class User(db.Model, UserMixin):
     return User.query.get(user_id)
 
 
+class CurrencyCache(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  last_update = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+  coinSymbol = db.Column(db.String(150))
+  coinName = db.Column(db.String(150))
+  price = db.Column(DECIMAL(38,15))
+  change24h = db.Column(DECIMAL(16,4))
+  change7d = db.Column(DECIMAL(16,4))
+  change30d = db.Column(DECIMAL(16,4))
+  currencies = db.relationship('Currency', backref=db.backref('currencycache'))
+
+
 class Currency(db.Model):
   id = db.Column(db.Integer, primary_key=True)
+  last_update = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
   name = db.Column(db.String(150))
-  quantity = db.Column(db.Integer)
-  value = db.Column(db.Integer)
-  user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+  quantity = db.Column(DECIMAL(38,15))
+  value = db.Column(DECIMAL(38,15))
+  user_id = db.Column(db.Integer, db.ForeignKey(User.id))
+  cache_id = db.Column(db.Integer, db.ForeignKey(CurrencyCache.id))
 
 
 class CoinGeckoDb(db.Model):
