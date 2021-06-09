@@ -14,6 +14,10 @@ class User(db.Model, UserMixin):
   password = db.Column(db.String(150))
   firstName = db.Column(db.String(150))
   settings = db.Column(JSON)
+  value = db.Column(DECIMAL(38,15))
+  change24h = db.Column(DECIMAL(16,4))
+  change7d = db.Column(DECIMAL(16,4))
+  change30d = db.Column(DECIMAL(16,4))
   currencies = db.relationship('Currency', backref=db.backref('user'))
 
   def get_reset_token(self, expires_sec=1800):

@@ -3,11 +3,11 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from dotenv import load_dotenv
-
+import sys
 
 
 class DigitLimit:
-  def __init__(self, value, max_len=10):
+  def __init__(self, value, max_len=11):
     self.max_len = max_len
     self.out = self.truncate(value)
 
@@ -21,23 +21,63 @@ class Query:
   def __init__(self, search, list_to_append=None):
     self.data = None
     if type(search) == tuple:
-      lunar_search = search[0]
-      gecko_search = search[1]
-    else:
-      lunar_search = search
-      gecko_search = search
+      for query in search:
+        #print(f'{type(query)}: {query}', file=sys.stderr)
+        coin = LunarCrush(query)
+        #print(f'Lunar: {coin.data}', file=sys.stderr)
+        if coin.data is not None:
+          self.data = coin.data
+          if list_to_append:
+            list_to_append.append(self.data)
+          break
+        else:
+          coin = CoinGecko(query=query)
+          #print(f'Gecko: {coin.data}', file=sys.stderr)
+          if coin.data is not None:
+            self.data = coin.data
+            if list_to_append:
+              list_to_append.append(self.data)
+            break
+      if self.data is None:
+        print(f'Query not found: {search}', file=sys.stderr)
 
-    coin = LunarCrush(lunar_search)
-    if coin.data is None:
-      coin = CoinGecko(gecko_search)
+    else:
+      #print(f'Input: {search}', file=sys.stderr)
+      coin = LunarCrush(search[0])
       if coin.data is not None:
         self.data = coin.data
-        if list_to_append is not None:
-          list_to_append.append(coin.data)
-    else:
-      self.data = coin.data
-      if list_to_append is not None:
-        list_to_append.append(coin.data)
+        if list_to_append:
+          list_to_append.append(self.data)
+      else:
+        coin = CoinGecko(search[0])
+        if coin.data is not None:
+          self.data = coin.data
+          if list_to_append:
+            list_to_append.append(self.data)
+        else:
+          print(f'Query not found: {search}', file=sys.stderr)
+
+
+
+
+
+    #else:
+    #  lunar_search = search
+    #  gecko_search = search
+
+    #coin = LunarCrush(lunar_search)
+    #if coin.data is None:
+    #  coin = CoinGecko(gecko_search)
+     # if coin.data is not None:
+     #   self.data = coin.data
+     #   if list_to_append is not None:
+    #      list_to_append.append(coin.data)
+    #  else:
+     #   print(f'Query not found: {search}')
+    #else:
+     # self.data = coin.data
+    #  if list_to_append is not None:
+      #  list_to_append.append(coin.data)
 
 
 
@@ -66,10 +106,10 @@ class LunarCrush:
           return None
       temp_dict = json.loads(response.content)['data'][0]
       self.data = self.parse_relevant_data(temp_dict)
-    except Exception as e:
-      print(e)
+    except:# Exception as e:
+      #print("Lunar Crush.get_data", e)
       return None
-    return self.data
+    #return self.data
 
 
   def set_url(self, api_key, symbol, interval):
@@ -83,22 +123,25 @@ class LunarCrush:
 
 
   def parse_relevant_data(self, data):
-    data = {
-      "name": data['name'],
-      "id": data['id'],
-      "symbol": data['symbol'],
-      "price": data['price'],
-      # "price_btc": data['price_btc'],
-      "percent_change_24h": data['percent_change_24h'],
-      "percent_change_7d": data['percent_change_7d'],
-      "percent_change_30d": data['percent_change_30d'],
-      # "interval": self.interval,
-      # "open": data['timeSeries'][0]['open'],
-      # "close": data['timeSeries'][0]['close'],
-      # "high": data['timeSeries'][0]['high'],
-      # "low": data['timeSeries'][0]['low']
-    }
-    return data
+    try:
+      data = {
+        "name": data['name'],
+        "id": data['id'],
+        "symbol": data['symbol'],
+        "price": data['price'],
+        # "price_btc": data['price_btc'],
+        "percent_change_24h": data['percent_change_24h'],
+        "percent_change_7d": data['percent_change_7d'],
+        "percent_change_30d": data['percent_change_30d'],
+        # "interval": self.interval,
+        # "open": data['timeSeries'][0]['open'],
+        # "close": data['timeSeries'][0]['close'],
+        # "high": data['timeSeries'][0]['high'],
+        # "low": data['timeSeries'][0]['low']
+      }
+      return data
+    except:
+      return None
 
 
   def symbol_lookup(self, full_name):
@@ -121,7 +164,9 @@ class CoinGecko:
       coin_id = query
       if coin_id is not None:
         coin_data = self.get_data(coin_id)
-        self.data = self.parse_relevant_data(coin_data)
+        if coin_data:
+          self.data = self.parse_relevant_data(coin_data)
+          #print(self.data, file=sys.stderr)
     else:
       self.all_coins =  self.generate_coin_list()
 
@@ -137,6 +182,7 @@ class CoinGecko:
 
   def get_data(self, coin_id):
     response = requests.request(method='GET', url=f"https://api.coingecko.com/api/v3/coins/{coin_id}?market_data=true")
+    #print(f'gecko response {response.status_code}', file=sys.stderr)
     if response.status_code == 200:
       soup = BeautifulSoup(response.content, "html.parser")
       coin_data = json.loads(soup.string)
@@ -145,16 +191,20 @@ class CoinGecko:
 
 
   def parse_relevant_data(self, coin_data):
-    data = {
-      "name": coin_data['name'],
-      "id": coin_data['id'],
-      "symbol": coin_data['symbol'],
-      "price": coin_data['market_data']['current_price']['usd'],
-      "percent_change_24h": coin_data['market_data']['price_change_percentage_24h'],
-      "percent_change_7d": coin_data['market_data']['price_change_percentage_7d'],
-      "percent_change_30d": coin_data['market_data']['price_change_percentage_30d'],
-    }
-    return data
+    if 'market_data' in coin_data:
+      if 'current_price' in coin_data['market_data']:
+        if 'usd' in coin_data['market_data']['current_price']:
+            data = {
+              "name": coin_data['name'],
+              "id": coin_data['id'],
+              "symbol": coin_data['symbol'],
+              "price": coin_data['market_data']['current_price']['usd'],
+              "percent_change_24h": coin_data['market_data']['price_change_percentage_24h'],
+              "percent_change_7d": coin_data['market_data']['price_change_percentage_7d'],
+              "percent_change_30d": coin_data['market_data']['price_change_percentage_30d'],
+            }
+            return data
+    return None
 
 
   def generate_coin_list(self):

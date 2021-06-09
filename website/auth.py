@@ -98,7 +98,8 @@ def signup():
             'netvalue':False
           }
         }
-        new_user = User(email=email, firstName=firstName, password=generate_password_hash(password1, method='sha256'), role="basic", settings=json.dumps(user_settings))
+        new_user = User(email=email, firstName=firstName, password=generate_password_hash(password1, method='sha256'), role="basic", 
+                        settings=json.dumps(user_settings), value=0, change24h=0, change7d=0, change30d=0)
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user, remember=True)

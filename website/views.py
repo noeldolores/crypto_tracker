@@ -14,7 +14,14 @@ from .models import User, CurrencyCache, Currency, CoinGeckoDb
 views = Blueprint('views', __name__)
 
 
-def load_favorites_data(current_favorites): #list[(coinname, coinquantity)]
+def load_favorites_data(): #list[(coinname, coinquantity)]
+  if 'favorites' not in session:
+    favorites_list = []
+    for currency in current_user.currencies:
+      favorites_list.append((currency.name, json.loads(str(currency.quantity))))
+    session['favorites'] = sorted(favorites_list)
+  current_favorites = session['favorites']
+
   if len(current_user.currencies) > 0:
     verbose_favorites = []
     api_lookup = []
@@ -73,6 +80,39 @@ def reorder_list(correct_order=list, thread_output=list):
         quant_value = crypto_lookup.DigitLimit(coin_quant * num, max_len=10).out
         corrected_list.append((coin, coin_quant, quant_value))
   return corrected_list
+
+
+def update_portfolio(update_list):
+  try:
+    new_value = 0
+    _24hour = []
+    _7day = []
+    _30day = []
+    for item in update_list:
+      new_value += json.loads(str(item[2]))
+      _24hour.append((float(item[2]), float(item[0]['percent_change_24h'])))
+      _7day.append((float(item[2]), float(item[0]['percent_change_7d'])))
+      _30day.append((float(item[2]), float(item[0]['percent_change_30d'])))
+
+    current_user.value = new_value
+    current_user.change24h = weighted_percent(_24hour)
+    current_user.change7d = weighted_percent(_7day)
+    current_user.change30d = weighted_percent(_30day)
+    db.session.commit()
+    return True
+  except Exception as e:
+    print(e)
+    return False
+
+
+def weighted_percent(val_list): #list of tuples
+  current = 0
+  previous = 0
+  for item in val_list:
+    current += item[0]
+    previous += item[0] / ((100 + item[1])/100)
+
+  return (current - previous) / previous * 100
 
 
 def currency_search(to_search):
@@ -217,12 +257,12 @@ def home():
 
     if len(current_user.currencies) > 0:
       show_time = True
-      if 'favorites' not in session:
-        favorites_list = []
-        for currency in current_user.currencies:
-          favorites_list.append((currency.name, json.loads(str(currency.quantity))))
-        session['favorites'] = sorted(favorites_list)
-      sorted_favorites = load_favorites_data(session['favorites'])
+      sorted_favorites = load_favorites_data()
+      
+      try:
+        update_portfolio(sorted_favorites)
+      except Exception as e:
+        print(e)
 
     else:
       session.pop('_flashes', None)
@@ -285,18 +325,27 @@ def home():
 
     elif 'quantity' in request.form:
       to_save = request.form['to_save'].split(',')
-      quantity = float(request.form['quantity'])
+      if request.form['quantity'] == "":
+        quantity = 0
+      else:
+        quantity = float(request.form['quantity'])
 
       location = int(to_save[1])
       _coin = sorted_favorites[location][0]
 
       to_update = Currency.query.join(User, Currency.user_id==current_user.id).filter(Currency.name==to_save[0].lower()).first()
       to_update.quantity = quantity
-      to_update.value = float(_coin['price']) * quantity
+      value = float(_coin['price']) * quantity
+      to_update.value = value
 
       db.session.commit()
 
       sorted_favorites[location] = (_coin, quantity, crypto_lookup.DigitLimit(to_update.value, max_len=10).out)
+
+      try:
+        update_portfolio(sorted_favorites)
+      except Exception as e:
+        print(e)
 
       session.pop('favorites', None)
       return render_template('home.html', user=current_user, result=result, bad_query=bad_query, in_favorites=in_favorites, favorites=sorted_favorites, time=time, show_time=show_time, settings = user_settings)

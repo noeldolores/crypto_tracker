@@ -19,8 +19,8 @@ def CurrencyCache_Query(query):
 
   
 def CurrencyCache_IdLookup(name=None, symbol=None):
-  coinSymbol_check = CurrencyCache.query.filter_by(coinSymbol=symbol.lower()).first()
-  coinName_check = CurrencyCache.query.filter_by(coinName=name.lower()).first()
+  coinSymbol_check = CurrencyCache.query.filter_by(coinSymbol=str(symbol).lower()).first()
+  coinName_check = CurrencyCache.query.filter_by(coinName=str(name).lower()).first()
   
   if coinSymbol_check:
     return coinSymbol_check
@@ -41,7 +41,7 @@ def CurrencyCache_Update(sql_coin, coin):
     db.session.commit()
     return True
   except Exception as e:
-    print(e)
+    print("CurrencyCache_Update ", e)
     return False
 
 

@@ -27,30 +27,74 @@ $(document).ready(function(){
   <h1 align="center" class="text-white p-3">Dashboard ({{ settings['displaycurrency'] }})</h1>
   <br />
     {% if favorites != None %}
-    <div class="container-fluid p-2 mb-5 rounded custom-border" style="background-color:#ffffff">
+    <div class="container-fluid rounded custom-border" style="background-color:#ffffff">
+
+      
+        <div class="row justify-content-around" style="margin:-1em; margin-bottom:-1em">
+
+          <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+            <div class="row justify-content-center bg-dark text-white rounded">
+              <h2>TOTAL</h2>
+            </div>
+            <div class="row justify-content-center">
+              <h4>{{ "{:.4f}".format(user.value) }}</h4>
+            </div>
+          </div>
+
+          <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+            <div class="row justify-content-center bg-dark text-white rounded">
+              <h2>24 HOUR</h2>
+            </div>
+            <div class="row justify-content-center num">
+              <h4>{{ "{:.4f}".format(user.change24h) }}</h4>
+            </div>
+          </div>
+
+          <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+            <div class="row justify-content-center bg-dark text-white rounded">
+              <h2>7 DAY</h2>
+            </div>
+            <div class="row justify-content-center num">
+              <h4>{{ "{:.4f}".format(user.change7d) }}</h4>
+            </div>
+          </div>
+
+          <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
+            <div class="row justify-content-center bg-dark text-white rounded">
+              <h2>30 DAY</h2>
+            </div>
+            <div class="row justify-content-center num">
+              <h4>{{ "{:.4f}".format(user.change30d) }}</h4>
+            </div>
+          </div>
+
+        </div>
+      
+
+
       <div class="row justify-content-around">
       {%for i in range(0, favorites|length)%}
         <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
 
-          <div class="row p-3 border justify-content-center bg-dark text-white">
+          <div class="row p-3 border justify-content-center bg-dark text-white rounded">
             {{ favorites[i][0]['name'] }} ({{ favorites[i][0]['symbol'] }})
           </div>
 
           <div class="row">
-            <div class="col p-3 border bg-dark text-white">
+            <div class="col p-3 border bg-dark text-white rounded">
             Current
             </div>
-            <div class="col p-3 border bg-dark text-white">
+            <div class="col p-3 border bg-dark text-white rounded">
             {{ favorites[i][0]['price'] }}
             </div>
           </div>
 
           {% if settings['dashboard']['24hours'] %}
           <div class="row">
-            <div class="col p-3 border bg-dark text-white">
+            <div class="col p-3 border bg-dark text-white rounded">
             24 Hours
             </div>
-            <div class="col p-3 border bg-dark num">
+            <div class="col p-3 border bg-dark num rounded">
             {{ favorites[i][0]['percent_change_24h'] }}%
             </div>
           </div>
@@ -58,10 +102,10 @@ $(document).ready(function(){
 
           {% if settings['dashboard']['7days'] %}
           <div class="row">
-            <div class="col p-3 border bg-dark text-white">
+            <div class="col p-3 border bg-dark text-white rounded">
             7 Days
             </div>
-            <div class="col p-3 border bg-dark num">
+            <div class="col p-3 border bg-dark num rounded">
             {{ favorites[i][0]['percent_change_7d'] }}%
             </div>
           </div>
@@ -69,10 +113,10 @@ $(document).ready(function(){
 
           {% if settings['dashboard']['30days'] %}
           <div class="row">
-            <div class="col p-3 border bg-dark text-white">
+            <div class="col p-3 border bg-dark text-white rounded">
             30 Days
             </div>
-            <div class="col p-3 border bg-dark num">
+            <div class="col p-3 border bg-dark num rounded">
             {{ favorites[i][0]['percent_change_30d'] }}%
             </div>
           </div>
@@ -80,10 +124,10 @@ $(document).ready(function(){
 
           {% if settings['dashboard']['quantity'] %}
           <div class="row">
-            <div class="col p-3 border bg-dark text-white">
+            <div class="col p-3 border bg-dark text-white rounded">
             Owned
             </div>
-            <button type="button" class="col p-3 border bg-dark modal-quant text-white text-left" value={{favorites[i][0]['symbol']}},{{i}} data-toggle="modal" href="#exampleModal">
+            <button type="button" class="col p-3 border bg-dark modal-quant text-white text-left rounded" value={{favorites[i][0]['symbol']}},{{i}} data-toggle="modal" href="#exampleModal">
             {{ favorites[i][1] }}
             </button>
           </div>
@@ -91,17 +135,17 @@ $(document).ready(function(){
 
           {% if settings['dashboard']['netvalue'] %}
           <div class="row">
-            <div class="col p-3 border bg-dark text-white">
+            <div class="col p-3 border bg-dark text-white rounded">
             Value
             </div>
-            <div class="col p-3 border bg-dark text-white">
+            <div class="col p-3 border bg-dark text-white rounded">
             {{ favorites[i][2] }}
             </div>
           </div>
           {% endif %}
 
           <form method='POST'>
-            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark" value={{ favorites[i][0]['symbol'] }} name='remove_favorite'>Remove {{ favorites[i][0]['symbol'] }}</button>
+            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark rounded" value={{ favorites[i][0]['symbol'] }} name='remove_favorite'>Remove {{ favorites[i][0]['symbol'] }}</button>
           </form>
         </div>
       {% endfor %}
