@@ -3,8 +3,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
-from .views import currency_search
-from . import db, mail
+from .views import search, currency_cache_query
+from . import db, mail, crypto_lookup
 from flask_mail import Message
 
 
@@ -24,8 +24,11 @@ def login():
 
   if request.method == 'POST':
     if 'search' in request.form:
-      result, bad_query = currency_search(request.form['search'])
-      return render_template("login.html", user=current_user, result=result, bad_query=bad_query)
+      in_favorites = True
+      query = str(request.form['search']).lower()
+      search_results = search(query)
+    
+      return render_template("login.html", search_results=search_results, user=current_user, in_favorites=in_favorites)
 
     else:
       email = str(escape(request.form.get('email'))).lower()
@@ -64,8 +67,11 @@ def signup():
 
   if request.method == 'POST':
     if 'search' in request.form:
-      result, bad_query = currency_search(request.form['search'])
-      return render_template("login.html", user=current_user, result=result, bad_query=bad_query)
+      in_favorites = True
+      query = str(request.form['search']).lower()
+      search_results = search(query)
+
+      return render_template("login.html", search_results=search_results, user=current_user, in_favorites=in_favorites)
 
     else:
       email = str(escape(request.form.get('email'))).lower()
@@ -98,7 +104,7 @@ def signup():
             'netvalue':False
           }
         }
-        new_user = User(email=email, firstName=firstName, password=generate_password_hash(password1, method='sha256'), role="basic", 
+        new_user = User(email=email, firstName=firstName, password=generate_password_hash(password1, method='sha256'), role="basic",
                         settings=json.dumps(user_settings), value=0, change24h=0, change7d=0, change30d=0)
         db.session.add(new_user)
         db.session.commit()

@@ -28,49 +28,45 @@ $(document).ready(function(){
   <br />
     {% if favorites != None %}
     <div class="container-fluid rounded custom-border" style="background-color:#ffffff">
-
-      
-        <div class="row justify-content-around" style="margin:-1em; margin-bottom:-1em">
-
-          <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
-            <div class="row justify-content-center bg-dark text-white rounded">
-              <h2>TOTAL</h2>
-            </div>
-            <div class="row justify-content-center">
-              <h4>{{ "{:.4f}".format(user.value) }}</h4>
-            </div>
+      {% if dashboard_summary['value']|float > 0|float %}
+      <div class="row justify-content-around" style="margin:-1em; margin-bottom:-1em">
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+          <div class="row justify-content-center bg-dark text-white rounded">
+            <h2>TOTAL</h2>
           </div>
-
-          <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
-            <div class="row justify-content-center bg-dark text-white rounded">
-              <h2>24 HOUR</h2>
-            </div>
-            <div class="row justify-content-center num">
-              <h4>{{ "{:.4f}".format(user.change24h) }}</h4>
-            </div>
+          <div class="row justify-content-center">
+            <h4>{{ dashboard_summary['value'] }}</h4>
           </div>
-
-          <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
-            <div class="row justify-content-center bg-dark text-white rounded">
-              <h2>7 DAY</h2>
-            </div>
-            <div class="row justify-content-center num">
-              <h4>{{ "{:.4f}".format(user.change7d) }}</h4>
-            </div>
-          </div>
-
-          <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
-            <div class="row justify-content-center bg-dark text-white rounded">
-              <h2>30 DAY</h2>
-            </div>
-            <div class="row justify-content-center num">
-              <h4>{{ "{:.4f}".format(user.change30d) }}</h4>
-            </div>
-          </div>
-
         </div>
-      
 
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+          <div class="row justify-content-center bg-dark text-white rounded">
+            <h2>24 HOUR</h2>
+          </div>
+          <div class="row justify-content-center num">
+            <h4>{{ "{:.4f}".format(dashboard_summary['change24h']) }}%</h4>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+          <div class="row justify-content-center bg-dark text-white rounded">
+            <h2>7 DAY</h2>
+          </div>
+          <div class="row justify-content-center num">
+            <h4>{{ "{:.4f}".format(dashboard_summary['change7d']) }}%</h4>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
+          <div class="row justify-content-center bg-dark text-white rounded">
+            <h2>30 DAY</h2>
+          </div>
+          <div class="row justify-content-center num">
+            <h4>{{ "{:.4f}".format(dashboard_summary['change30d']) }}%</h4>
+          </div>
+        </div>
+      </div>
+      {% endif %}
 
       <div class="row justify-content-around">
       {%for i in range(0, favorites|length)%}
@@ -85,17 +81,28 @@ $(document).ready(function(){
             Current
             </div>
             <div class="col p-3 border bg-dark text-white rounded">
-            {{ favorites[i][0]['price'] }}
+            {{ favorites[i][0]['current_price'] }}
             </div>
           </div>
+
+          {% if settings['dashboard']['1hour'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            1 Hour
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_1h_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
 
           {% if settings['dashboard']['24hours'] %}
           <div class="row">
             <div class="col p-3 border bg-dark text-white rounded">
-            24 Hours
+            24 Hour
             </div>
             <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['percent_change_24h'] }}%
+            {{ favorites[i][0]['price_change_percentage_24h_in_currency'] }}%
             </div>
           </div>
           {% endif %}
@@ -103,10 +110,21 @@ $(document).ready(function(){
           {% if settings['dashboard']['7days'] %}
           <div class="row">
             <div class="col p-3 border bg-dark text-white rounded">
-            7 Days
+            7 Day
             </div>
             <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['percent_change_7d'] }}%
+            {{ favorites[i][0]['price_change_percentage_7d_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['14days'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            14 Day
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_14d_in_currency'] }}%
             </div>
           </div>
           {% endif %}
@@ -114,10 +132,32 @@ $(document).ready(function(){
           {% if settings['dashboard']['30days'] %}
           <div class="row">
             <div class="col p-3 border bg-dark text-white rounded">
-            30 Days
+            30 Day
             </div>
             <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['percent_change_30d'] }}%
+            {{ favorites[i][0]['price_change_percentage_30d_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['200days'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            200 Day
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_200d_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['1year'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            1 Year
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_1y_in_currency'] }}%
             </div>
           </div>
           {% endif %}
@@ -127,7 +167,7 @@ $(document).ready(function(){
             <div class="col p-3 border bg-dark text-white rounded">
             Owned
             </div>
-            <button type="button" class="col p-3 border bg-dark modal-quant text-white text-left rounded" value={{favorites[i][0]['symbol']}},{{i}} data-toggle="modal" href="#exampleModal">
+            <button type="button" class="col p-3 border bg-dark modal-quant text-white text-left rounded" value="{{favorites[i][0]['id']}},{{i}}" data-toggle="modal" href="#exampleModal">
             {{ favorites[i][1] }}
             </button>
           </div>
@@ -145,7 +185,7 @@ $(document).ready(function(){
           {% endif %}
 
           <form method='POST'>
-            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark rounded" value={{ favorites[i][0]['symbol'] }} name='remove_favorite'>Remove {{ favorites[i][0]['symbol'] }}</button>
+            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark rounded" value="{{ favorites[i][0]['id'] }}" name='remove_favorite'>Remove {{ favorites[i][0]['symbol'] }}</button>
           </form>
         </div>
       {% endfor %}

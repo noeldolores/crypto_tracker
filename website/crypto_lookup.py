@@ -12,50 +12,56 @@ class DigitLimit:
     self.out = self.truncate(value)
 
   def truncate(self, num):
-    int_len = len(str(int(num)))
-    return (f"%.{max(self.max_len, int_len) - min(self.max_len, int_len)}f" % num).rstrip('0').rstrip('.')
+    if num is not None:
+      int_len = len(str(int(float(num))))
+      return (f"%.{max(self.max_len, int_len) - min(self.max_len, int_len)}f" % num).rstrip('0').rstrip('.')
+    return float(0)
 
 
 
 class Query:
   def __init__(self, search, list_to_append=None):
-    self.data = None
-    if type(search) == tuple:
-      for query in search:
-        #print(f'{type(query)}: {query}', file=sys.stderr)
-        coin = LunarCrush(query)
-        #print(f'Lunar: {coin.data}', file=sys.stderr)
-        if coin.data is not None:
-          self.data = coin.data
-          if list_to_append:
-            list_to_append.append(self.data)
-          break
-        else:
-          coin = CoinGecko(query=query)
-          #print(f'Gecko: {coin.data}', file=sys.stderr)
-          if coin.data is not None:
-            self.data = coin.data
-            if list_to_append:
-              list_to_append.append(self.data)
-            break
-      if self.data is None:
-        print(f'Query not found: {search}', file=sys.stderr)
-
+    coin = CoinGecko(query=search)
+    if coin:
+      self.data = coin.data
     else:
-      #print(f'Input: {search}', file=sys.stderr)
-      coin = LunarCrush(search[0])
-      if coin.data is not None:
-        self.data = coin.data
-        if list_to_append:
-          list_to_append.append(self.data)
-      else:
-        coin = CoinGecko(search[0])
-        if coin.data is not None:
-          self.data = coin.data
-          if list_to_append:
-            list_to_append.append(self.data)
-        else:
-          print(f'Query not found: {search}', file=sys.stderr)
+      self.data = None
+    # if type(search) == tuple:
+    #   for query in search:
+    #     #print(f'{type(query)}: {query}', file=sys.stderr)
+    #     coin = LunarCrush(query)
+    #     #print(f'Lunar: {coin.data}', file=sys.stderr)
+    #     if coin.data is not None:
+    #       self.data = coin.data
+    #       if list_to_append:
+    #         list_to_append.append(self.data)
+    #       break
+    #     else:
+    #       coin = CoinGecko(query=query.lower())
+    #       #print(f'Gecko: {coin.data}', file=sys.stderr)
+    #       if coin.data is not None:
+    #         self.data = coin.data
+    #         if list_to_append:
+    #           list_to_append.append(self.data)
+    #         break
+    #   if self.data is None:
+    #     print(f'Query not found: {search}', file=sys.stderr)
+
+    # else:
+    #   #print(f'Input: {search}', file=sys.stderr)
+    #   coin = LunarCrush(search[0])
+    #   if coin.data is not None:
+    #     self.data = coin.data
+    #     if list_to_append:
+    #       list_to_append.append(self.data)
+    #   else:
+    #     coin = CoinGecko(search[0])
+    #     if coin.data is not None:
+    #       self.data = coin.data
+    #       if list_to_append:
+    #         list_to_append.append(self.data)
+    #     else:
+    #       print(f'Query not found: {search}', file=sys.stderr)
 
 
 
@@ -165,10 +171,11 @@ class CoinGecko:
       if coin_id is not None:
         coin_data = self.get_data(coin_id)
         if coin_data:
-          self.data = self.parse_relevant_data(coin_data)
+          self.data = coin_data
+          #self.data = self.parse_relevant_data(coin_data)
           #print(self.data, file=sys.stderr)
     else:
-      self.all_coins =  self.generate_coin_list()
+      self.all_coins = self.generate_coin_list()
 
 
   def symbol_lookup(self, query):
@@ -181,13 +188,26 @@ class CoinGecko:
 
 
   def get_data(self, coin_id):
-    response = requests.request(method='GET', url=f"https://api.coingecko.com/api/v3/coins/{coin_id}?market_data=true")
-    #print(f'gecko response {response.status_code}', file=sys.stderr)
+    url = f"https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids={coin_id}&sparkline=true&price_change_percentage=1h,24h,7d,14d,30d,200d,1y"
+    response = requests.request(method='GET', url=url)
     if response.status_code == 200:
       soup = BeautifulSoup(response.content, "html.parser")
-      coin_data = json.loads(soup.string)
-      return coin_data
-    return None
+      try:
+        return json.loads(soup.string)
+      except Exception as e:
+        print(f"query_market_data: {e}", file=sys.stderr)
+        return None
+    else:
+      print(f"query_market_data: {response} : {response.status_code}", file=sys.stderr)
+      return None
+
+    # response = requests.request(method='GET', url=f"https://api.coingecko.com/api/v3/coins/{coin_id}?market_data=true")
+    # #print(f'gecko response {response.status_code}', file=sys.stderr)
+    # if response.status_code == 200:
+    #   soup = BeautifulSoup(response.content, "html.parser")
+    #   coin_data = json.loads(soup.string)
+    #   return coin_data
+    # return None
 
 
   def parse_relevant_data(self, coin_data):

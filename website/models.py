@@ -7,6 +7,7 @@ from . import db
 from flask import current_app as app
 
 
+
 class User(db.Model, UserMixin):
   id = db.Column(db.Integer, primary_key=True)
   role = db.Column(db.String(150))
@@ -34,26 +35,38 @@ class User(db.Model, UserMixin):
     return User.query.get(user_id)
 
 
+
 class CurrencyCache(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   last_update = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-  coinSymbol = db.Column(db.String(150))
-  coinName = db.Column(db.String(150))
+  coin_id = db.Column(db.String(150), unique=True)
+  name = db.Column(db.String(150))
+  symbol = db.Column(db.String(150))
+  img_url = db.Column(db.String(150))
   price = db.Column(DECIMAL(38,15))
+  change1h = db.Column(DECIMAL(16,4))
   change24h = db.Column(DECIMAL(16,4))
   change7d = db.Column(DECIMAL(16,4))
+  change14d = db.Column(DECIMAL(16,4))
   change30d = db.Column(DECIMAL(16,4))
-  currencies = db.relationship('Currency', backref=db.backref('currencycache'))
+  change200d = db.Column(DECIMAL(16,4))
+  change1y = db.Column(DECIMAL(16,4))
+  sparkline = db.Column(JSON)
+  platforms = db.Column(JSON)
+
 
 
 class Currency(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   last_update = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+  coin_id = db.Column(db.String(150))
   name = db.Column(db.String(150))
+  symbol = db.Column(db.String(150))
   quantity = db.Column(DECIMAL(38,15))
   value = db.Column(DECIMAL(38,15))
+  cache_id = db.Column(db.Integer)
   user_id = db.Column(db.Integer, db.ForeignKey(User.id))
-  cache_id = db.Column(db.Integer, db.ForeignKey(CurrencyCache.id))
+  
 
 
 class CoinGeckoDb(db.Model):
