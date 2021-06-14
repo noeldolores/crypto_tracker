@@ -246,6 +246,17 @@
                 </div>
               </div>
 
+              <div class="row">
+                <div class="col border bg-dark text-white text-center">
+                  7 Day &#8722; High: {{ search_results[i]['sparkline_in_7d'][1] }} &#8722; Low: {{ search_results[i]['sparkline_in_7d'][2] }}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col border bg-dark text-white">
+                  {{ search_results[i]['sparkline_in_7d'][0] }}
+                </div>
+              </div>
+            
               {% if user %}
                 {% if user.is_authenticated %}
                   {% if in_favorites[i] == False %}

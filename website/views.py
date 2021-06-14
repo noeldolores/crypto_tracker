@@ -6,9 +6,10 @@ import sys
 from currency_converter import CurrencyConverter
 import pytz
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db, crypto_lookup, cache
+from . import db, crypto_lookup, cache, sparkline
 from .models import User, Currency, CurrencyCache
 import time
+from IPython.display import HTML
 
 
 views = Blueprint('views', __name__)
@@ -64,6 +65,7 @@ def search(query):
       _30d = coin['price_change_percentage_30d_in_currency']
       _200d = coin['price_change_percentage_200d_in_currency']
       _1y = coin['price_change_percentage_1y_in_currency']
+      spark = coin['sparkline_in_7d']['price']
 
 
       coin['current_price'] = crypto_lookup.DigitLimit(_price, max_len=10).out
@@ -74,6 +76,7 @@ def search(query):
       coin['price_change_percentage_30d_in_currency'] = crypto_lookup.DigitLimit(_30d, max_len=6).out
       coin['price_change_percentage_200d_in_currency'] = crypto_lookup.DigitLimit(_200d, max_len=6).out
       coin['price_change_percentage_1y_in_currency'] = crypto_lookup.DigitLimit(_1y, max_len=6).out
+      coin['sparkline_in_7d'] = (sparkline.sparkline(spark), crypto_lookup.DigitLimit(max(spark), max_len=6).out, crypto_lookup.DigitLimit(min(spark), max_len=6).out)
 
     return search_results
   
