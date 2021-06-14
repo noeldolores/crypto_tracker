@@ -1,9 +1,9 @@
-<label for="dashboardOptions" class="text-white">Dasboard View</label>
+<label for="dashboardOptions" class="text-white">Dasboard Filter</label>
 <div class="dropdown">
-  <button class="btn btn-default dropdown-toggle custom-select text-left" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+  <button class="btn btn-default dropdown-toggle custom-select text-left" type="button" id="dropdownMenu2" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="true">
     <span class="caret">Layout | Market | Owned</span>
   </button>
-  <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1">
+  <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu2">
   
     <li >
       <label>
@@ -21,43 +21,43 @@
 
     <li >
       <label>
-        <input class="j_check" type="checkbox" name="1hour" value={{ settings['dashboard']['1hour'] }}> 1 Hour %
+        <input class="j_check" type="checkbox" name="dash_1hour" value={{ settings['dashboard']['1hour'] }}> 1 Hour %
       </label>
     </li>
 
     <li >
       <label>
-        <input class="j_check" type="checkbox" name="24hours" value={{ settings['dashboard']['24hours'] }}> 24 Hours %
+        <input class="j_check" type="checkbox" name="dash_24hours" value={{ settings['dashboard']['24hours'] }}> 24 Hours %
       </label>
     </li>
 
     <li >
       <label>
-        <input class="j_check" type="checkbox" name="7days" value={{ settings['dashboard']['7days'] }}> 7 Days %
+        <input class="j_check" type="checkbox" name="dash_7days" value={{ settings['dashboard']['7days'] }}> 7 Days %
       </label>
     </li>
 
     <li >
       <label>
-        <input class="j_check" type="checkbox" name="14days" value={{ settings['dashboard']['14days'] }}> 14 Days %
+        <input class="j_check" type="checkbox" name="dash_14days" value={{ settings['dashboard']['14days'] }}> 14 Days %
       </label>
     </li>
 
     <li >
       <label>
-        <input class="j_check" type="checkbox" name="30days" value={{ settings['dashboard']['30days'] }}> 30 Days %
+        <input class="j_check" type="checkbox" name="dash_30days" value={{ settings['dashboard']['30days'] }}> 30 Days %
       </label>
     </li>
 
     <li >
       <label>
-        <input class="j_check" type="checkbox" name="200days" value={{ settings['dashboard']['200days'] }}> 200 Days %
+        <input class="j_check" type="checkbox" name="dash_200days" value={{ settings['dashboard']['200days'] }}> 200 Days %
       </label>
     </li>
 
     <li >
       <label>
-        <input class="j_check" type="checkbox" name="1year" value={{ settings['dashboard']['1year'] }}> 1 Year %
+        <input class="j_check" type="checkbox" name="dash_1year" value={{ settings['dashboard']['1year'] }}> 1 Year %
       </label>
     </li>
 
@@ -72,6 +72,14 @@
     <li >
       <label>
         <input class="j_check" type="checkbox" name="netvalue" value={{ settings['dashboard']['netvalue'] }}> Quantity Value
+      </label>
+    </li>
+
+    <div class="dropdown-divider"></div>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="dash_sparkline" value={{ settings['search']['sparkline'] }}> Sparkline Graph
       </label>
     </li>
     

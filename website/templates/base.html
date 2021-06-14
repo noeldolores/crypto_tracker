@@ -183,6 +183,18 @@
                 </div>
               </div>
 
+              {% if user.is_authenticated %}
+                {% if settings['search']['1hour'] %}
+                <div class="row">
+                  <div class="col p-3 border bg-dark text-white">
+                  1 Hour
+                  </div>
+                  <div class="col p-3 border bg-dark num">
+                  {{ search_results[i]['price_change_percentage_1h_in_currency'] }}%
+                  </div>
+                </div>
+                {% endif %}
+              {% else %}
               <div class="row">
                 <div class="col p-3 border bg-dark text-white">
                 1 Hour
@@ -191,7 +203,20 @@
                 {{ search_results[i]['price_change_percentage_1h_in_currency'] }}%
                 </div>
               </div>
+              {% endif %}
 
+              {% if user.is_authenticated %}
+                {% if settings['search']['24hours'] %}
+                <div class="row">
+                  <div class="col p-3 border bg-dark text-white">
+                  24 Hours
+                  </div>
+                  <div class="col p-3 border bg-dark num">
+                  {{ search_results[i]['price_change_percentage_24h_in_currency'] }}%
+                  </div>
+                </div>
+                {% endif %}
+              {% else %}
               <div class="row">
                 <div class="col p-3 border bg-dark text-white">
                 24 Hours
@@ -200,7 +225,20 @@
                 {{ search_results[i]['price_change_percentage_24h_in_currency'] }}%
                 </div>
               </div>
+              {% endif %}
 
+              {% if user.is_authenticated %}
+                {% if settings['search']['7days'] %}
+                <div class="row">
+                  <div class="col p-3 border bg-dark text-white">
+                  7 Days
+                  </div>
+                  <div class="col p-3 border bg-dark num">
+                  {{ search_results[i]['price_change_percentage_7d_in_currency'] }}%
+                  </div>
+                </div>
+                {% endif %}
+              {% else %}
               <div class="row">
                 <div class="col p-3 border bg-dark text-white">
                 7 Days
@@ -209,7 +247,20 @@
                 {{ search_results[i]['price_change_percentage_7d_in_currency'] }}%
                 </div>
               </div>
+              {% endif %}
 
+              {% if user.is_authenticated %}
+                {% if settings['search']['14days'] %}
+                <div class="row">
+                  <div class="col p-3 border bg-dark text-white">
+                  14 Days
+                  </div>
+                  <div class="col p-3 border bg-dark num">
+                  {{ search_results[i]['price_change_percentage_14d_in_currency'] }}%
+                  </div>
+                </div>
+                {% endif %}
+              {% else %}
               <div class="row">
                 <div class="col p-3 border bg-dark text-white">
                 14 Days
@@ -218,7 +269,20 @@
                 {{ search_results[i]['price_change_percentage_14d_in_currency'] }}%
                 </div>
               </div>
+              {% endif %}
 
+              {% if user.is_authenticated %}
+                {% if settings['search']['30days'] %}
+                <div class="row">
+                  <div class="col p-3 border bg-dark text-white">
+                  30 Days
+                  </div>
+                  <div class="col p-3 border bg-dark num">
+                  {{ search_results[i]['price_change_percentage_30d_in_currency'] }}%
+                  </div>
+                </div>
+                {% endif %}
+              {% else %}
               <div class="row">
                 <div class="col p-3 border bg-dark text-white">
                 30 Days
@@ -227,7 +291,20 @@
                 {{ search_results[i]['price_change_percentage_30d_in_currency'] }}%
                 </div>
               </div>
+              {% endif %}
 
+              {% if user.is_authenticated %}
+                {% if settings['search']['200days'] %}
+                <div class="row">
+                  <div class="col p-3 border bg-dark text-white">
+                  200 Days
+                  </div>
+                  <div class="col p-3 border bg-dark num">
+                  {{ search_results[i]['price_change_percentage_200d_in_currency'] }}%
+                  </div>
+                </div>
+                {% endif %}
+              {% else %}
               <div class="row">
                 <div class="col p-3 border bg-dark text-white">
                 200 Days
@@ -236,7 +313,20 @@
                 {{ search_results[i]['price_change_percentage_200d_in_currency'] }}%
                 </div>
               </div>
+              {% endif %}
 
+              {% if user.is_authenticated %}
+                {% if settings['search']['1year'] %}
+                <div class="row">
+                  <div class="col p-3 border bg-dark text-white">
+                  1 Year
+                  </div>
+                  <div class="col p-3 border bg-dark num">
+                  {{ search_results[i]['price_change_percentage_1y_in_currency'] }}%
+                  </div>
+                </div>
+                {% endif %}
+              {% else %}
               <div class="row">
                 <div class="col p-3 border bg-dark text-white">
                 1 Year
@@ -245,17 +335,33 @@
                 {{ search_results[i]['price_change_percentage_1y_in_currency'] }}%
                 </div>
               </div>
+              {% endif %}
 
-              <div class="row">
-                <div class="col border bg-dark text-white text-center">
-                  7 Day &#8722; High: {{ search_results[i]['sparkline_in_7d'][1] }} &#8722; Low: {{ search_results[i]['sparkline_in_7d'][2] }}
+              {% if user.is_authenticated %}
+                {% if settings['search']['sparkline'] %}
+                <div class="row">
+                  <div class="col border bg-dark text-white text-center">
+                    7 Day &#8722; High: {{ search_results[i]['sparkline_in_7d'][1] }} &#8722; Low: {{ search_results[i]['sparkline_in_7d'][2] }}
+                  </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col border bg-dark text-white">
-                  {{ search_results[i]['sparkline_in_7d'][0] }}
+                <div class="row">
+                  <div class="col border bg-dark text-white">
+                    {{ search_results[i]['sparkline_in_7d'][0] }}
+                  </div>
                 </div>
-              </div>
+                {% endif %}
+              {% else %}
+              <div class="row">
+                  <div class="col border bg-dark text-white text-center">
+                    7 Day &#8722; High: {{ search_results[i]['sparkline_in_7d'][1] }} &#8722; Low: {{ search_results[i]['sparkline_in_7d'][2] }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col border bg-dark text-white">
+                    {{ search_results[i]['sparkline_in_7d'][0] }}
+                  </div>
+                </div>
+              {% endif %}
             
               {% if user %}
                 {% if user.is_authenticated %}

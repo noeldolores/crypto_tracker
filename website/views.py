@@ -9,7 +9,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db, crypto_lookup, cache, sparkline
 from .models import User, Currency, CurrencyCache
 import time
-from IPython.display import HTML
 
 
 views = Blueprint('views', __name__)
@@ -76,7 +75,7 @@ def search(query):
       coin['price_change_percentage_30d_in_currency'] = crypto_lookup.DigitLimit(_30d, max_len=6).out
       coin['price_change_percentage_200d_in_currency'] = crypto_lookup.DigitLimit(_200d, max_len=6).out
       coin['price_change_percentage_1y_in_currency'] = crypto_lookup.DigitLimit(_1y, max_len=6).out
-      coin['sparkline_in_7d'] = (sparkline.sparkline(spark), crypto_lookup.DigitLimit(max(spark), max_len=6).out, crypto_lookup.DigitLimit(min(spark), max_len=6).out)
+      coin['sparkline_in_7d'] = (sparkline.sparkline(spark), crypto_lookup.DigitLimit(max(spark), max_len=10).out, crypto_lookup.DigitLimit(min(spark), max_len=10).out)
 
     return search_results
   
@@ -318,6 +317,64 @@ def currency_cache_query(search):
 
 
 
+def init_user_settings():
+  if current_user.is_authenticated:
+    if current_user.settings is not None:
+      user_settings = json.loads(current_user.settings)
+      if 'search' not in user_settings:
+        user_settings['dashboard']['sparkline'] = False
+        user_settings['dashboard']['1hour'] = False
+        user_settings['dashboard']['14days'] = False
+        user_settings['dashboard']['200days'] = False
+        user_settings['dashboard']['1year'] = False
+
+        user_settings['search'] = {
+          'sparkline':True,
+          '1hour':True,
+          '24hours':True,
+          '7days':True,
+          '14days':False,
+          '30days':True,
+          '200days':False,
+          '1year':True,
+        }
+        current_user.settings = json.dumps(user_settings)
+        db.session.commit()
+    else:
+      user_settings = {
+        'timezone':'UTC',
+        'displaycurrency':'USD',
+        'dashboard': {
+          'grid':True,
+          'table':False,
+          'sparkline':False,
+          '1hour':False,
+          '24hours':True,
+          '7days':True,
+          '14days':False,
+          '30days':True,
+          '200days':False,
+          '1year':False,
+          'quantity':True,
+          'netvalue':True
+        },
+        'search': {
+          'sparkline':True,
+          '1hour':True,
+          '24hours':True,
+          '7days':True,
+          '14days':False,
+          '30days':True,
+          '200days':False,
+          '1year':True,
+        }
+      }
+      current_user.settings = json.dumps(user_settings)
+      db.session.commit()
+    return user_settings
+
+
+
 @views.route('/', methods=['GET', 'POST'])
 def redirect_to_home():
   return redirect(url_for('views.home'))
@@ -334,36 +391,7 @@ def home():
   utc_now = pytz.utc.localize(datetime.utcnow())
 
   if current_user.is_authenticated:
-    if current_user.settings is not None:
-      user_settings = json.loads(current_user.settings)
-      if '1hour' not in user_settings['dashboard']:
-        user_settings['dashboard']['sparklines'] = False
-        user_settings['dashboard']['1hour'] = False
-        user_settings['dashboard']['14days'] = False
-        user_settings['dashboard']['200days'] = False
-        user_settings['dashboard']['1year'] = False
-        current_user.settings = json.dumps(user_settings)
-        db.session.commit()
-    else:
-      user_settings = {
-        'timezone':'UTC',
-        'displaycurrency':'USD',
-        'dashboard': {
-          'grid':True,
-          'table':False,
-          'sparklines':False,
-          '1hour':False,
-          '24hours':True,
-          '7days':True,
-          '14days':False,
-          '30days':True,
-          '200days':False,
-          '1year':False,
-          'quantity':True,
-          'netvalue':True
-        }
-      }
-    
+    user_settings = init_user_settings()
     session['displaycurrency'] = user_settings['displaycurrency']
     dashboard_summary = load_dashboard_summary(session['displaycurrency'])
     time = utc_now.astimezone(pytz.timezone(str(user_settings['timezone']))).strftime("%m/%d/%Y %H:%M:%S")
@@ -501,41 +529,12 @@ def home():
 
 
 
-
 @views.route('/usersettings', methods=['GET', 'POST'])
 @login_required
 def usersettings():
   show_time = False
   if current_user.is_authenticated:
-    try:
-      user_settings = json.loads(current_user.settings)
-      if '1hour' not in user_settings['dashboard']:
-        user_settings['dashboard']['sparklines'] = False
-        user_settings['dashboard']['1hour'] = False
-        user_settings['dashboard']['14days'] = False
-        user_settings['dashboard']['200days'] = False
-        user_settings['dashboard']['1year'] = False
-        current_user.settings = json.dumps(user_settings)
-        db.session.commit()
-    except:
-      user_settings = {
-        'timezone':'UTC',
-        'displaycurrency':'USD',
-        'dashboard': {
-          'grid':True,
-          'table':False,
-          'sparklines':False,
-          '1hour':False,
-          '24hours':True,
-          '7days':True,
-          '14days':False,
-          '30days':True,
-          '200days':False,
-          '1year':False,
-          'quantity':True,
-          'netvalue':True
-        }
-      }
+    user_settings = init_user_settings()
 
     if request.method == 'POST':
       if 'search' in request.form:
@@ -607,27 +606,54 @@ def usersettings():
               user_settings['dashboard']['table'] = True
               changes.append('Table View')
 
-        _1hour = request.form.get('1hour')
-        _24hours = request.form.get('24hours')
-        _7days = request.form.get('7days')
-        _14days = request.form.get('14days')
-        _30days = request.form.get('30days')
-        _200days = request.form.get('200days')
-        _1year = request.form.get('1year')
+        d_1hour = request.form.get('dash_1hour')
+        d_24hours = request.form.get('dash_24hours')
+        d_7days = request.form.get('dash_7days')
+        d_14days = request.form.get('dash_14days')
+        d_30days = request.form.get('dash_30days')
+        d_200days = request.form.get('dash_200days')
+        d_1year = request.form.get('dash_1year')
         quantity = request.form.get('quantity')
         netvalue = request.form.get('netvalue')
-        dash_settings = {'1hour':_1hour, '24hours':_24hours, '7days':_7days, '14days':_14days, '30days':_30days, 
-                        '200days':_200days, '1year':_1year, 'quantity':quantity, 'netvalue':netvalue}
+        d_sparkline = request.form.get('dash_sparkline')
+        dash_settings = {'1hour':d_1hour, '24hours':d_24hours, '7days':d_7days, '14days':d_14days, '30days':d_30days, 
+                        '200days':d_200days, '1year':d_1year, 'quantity':quantity, 'netvalue':netvalue, 'sparkline':d_sparkline}
 
         for key, value in dash_settings.items():
           if value is not None:
             if user_settings['dashboard'][key] != True:
               user_settings['dashboard'][key] = True
-              changes.append(key.capitalize() )
+              if key.capitalize() not in changes:
+                changes.append(key.capitalize() )
           else:
             if user_settings['dashboard'][key] != False:
               user_settings['dashboard'][key] = False
-              changes.append(key.capitalize() )
+              if key.capitalize() not in changes:
+                changes.append(key.capitalize() )
+
+
+        s_1hour = request.form.get('search_1hour')
+        s_24hours = request.form.get('search_24hours')
+        s_7days = request.form.get('search_7days')
+        s_14days = request.form.get('search_14days')
+        s_30days = request.form.get('search_30days')
+        s_200days = request.form.get('search_200days')
+        s_1year = request.form.get('search_1year')
+        s_sparkline = request.form.get('search_sparkline')
+        search_settings = {'1hour':s_1hour, '24hours':s_24hours, '7days':s_7days, '14days':s_14days, 
+                          '30days':s_30days, '200days':s_200days, '1year':s_1year, 'sparkline':s_sparkline}
+
+        for key, value in search_settings.items():
+          if value is not None:
+            if user_settings['search'][key] != True:
+              user_settings['search'][key] = True
+              if key.capitalize() not in changes:
+                changes.append(key.capitalize() )
+          else:
+            if user_settings['search'][key] != False:
+              user_settings['search'][key] = False
+              if key.capitalize() not in changes:
+                changes.append(key.capitalize() )
 
       if timezone != "None":
         if timezone != user_settings['timezone']:

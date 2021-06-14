@@ -1,0 +1,59 @@
+<label for="dashboardOptions" class="text-white">Search Filter</label>
+<div class="dropdown">
+  <button class="btn btn-default dropdown-toggle custom-select text-left" type="button" id="dropdownMenu1" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="true">
+    <span class="caret"> Market </span>
+  </button>
+  <ul class="dropdown-menu checkbox-menu allow-focus" aria-labelledby="dropdownMenu1">
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="search_1hour" value={{ settings['search']['1hour'] }}> 1 Hour %
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="search_24hours" value={{ settings['search']['24hours'] }}> 24 Hours %
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="search_7days" value={{ settings['search']['7days'] }}> 7 Days %
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="search_14days" value={{ settings['search']['14days'] }}> 14 Days %
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="search_30days" value={{ settings['search']['30days'] }}> 30 Days %
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="search_200days" value={{ settings['search']['200days'] }}> 200 Days %
+      </label>
+    </li>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="search_1year" value={{ settings['search']['1year'] }}> 1 Year %
+      </label>
+    </li>
+
+    <div class="dropdown-divider"></div>
+
+    <li >
+      <label>
+        <input class="j_check" type="checkbox" name="search_sparkline" value={{ settings['search']['sparkline'] }}> Sparkline Graph
+      </label>
+    </li>
+
+  </ul>
+</div>
