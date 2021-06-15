@@ -106,6 +106,9 @@ def load_favorites_data():
       load_cache, age = cache.CurrencyCache_Query(coin_id)
       if load_cache is not None:
         if "old" not in age:
+          spark = load_cache.sparkline
+          if type(spark) == dict:
+            spark = load_cache.sparkline['price']
           cached_coin = {
             'name': load_cache.name,
             'symbol': load_cache.symbol,
@@ -119,7 +122,8 @@ def load_favorites_data():
             'price_change_percentage_30d_in_currency': crypto_lookup.DigitLimit(load_cache.change30d, max_len=6).out,
             'price_change_percentage_200d_in_currency': crypto_lookup.DigitLimit(load_cache.change200d, max_len=6).out,
             'price_change_percentage_1y_in_currency': crypto_lookup.DigitLimit(load_cache.change1y, max_len=6).out,
-            'sparkline_in_7d': load_cache.sparkline
+            'sparkline_in_7d': (sparkline.sparkline(spark), crypto_lookup.DigitLimit(max(spark), 
+                                max_len=10).out, crypto_lookup.DigitLimit(min(spark), max_len=10).out)
           }
 
           num = float(coin_quantity) * float(cached_coin['current_price'])
@@ -148,6 +152,10 @@ def load_favorites_data():
           data['price_change_percentage_30d_in_currency'] = crypto_lookup.DigitLimit(data['price_change_percentage_30d_in_currency'], max_len=6).out
           data['price_change_percentage_200d_in_currency'] = crypto_lookup.DigitLimit(data['price_change_percentage_200d_in_currency'], max_len=6).out
           data['price_change_percentage_1y_in_currency'] = crypto_lookup.DigitLimit(data['price_change_percentage_1y_in_currency'], max_len=6).out
+          spark = data['sparkline_in_7d']
+          if type(spark) == dict:
+            spark = data['sparkline_in_7d']['price']
+          data['sparkline_in_7d'] = (sparkline.sparkline(spark), crypto_lookup.DigitLimit(max(spark), max_len=10).out, crypto_lookup.DigitLimit(min(spark), max_len=10).out)
 
           num = float(coin_quantity) * float(data['current_price'])
           coin_value = crypto_lookup.DigitLimit(num, max_len=10).out

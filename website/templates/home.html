@@ -184,6 +184,19 @@ $(document).ready(function(){
           </div>
           {% endif %}
 
+          {% if settings['dashboard']['sparkline'] %}
+          <div class="row">
+            <div class="col border bg-dark text-white text-center">
+              7 Day &#8722; High: {{ favorites[i][0]['sparkline_in_7d'][1] }} &#8722; Low: {{ favorites[i][0]['sparkline_in_7d'][2] }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col border bg-dark text-white">
+              {{ favorites[i][0]['sparkline_in_7d'][0] }}
+            </div>
+          </div>
+          {% endif %}
+
           <form method='POST'>
             <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark rounded" value="{{ favorites[i][0]['id'] }}" name='remove_favorite'>Remove {{ favorites[i][0]['symbol'] }}</button>
           </form>

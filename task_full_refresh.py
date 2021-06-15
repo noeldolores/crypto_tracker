@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-from website import cache
-import requests
+from website import cache, app
 import json
-from app import app
+import requests
+
 
 
 def request_cpu_usage():
@@ -57,8 +56,8 @@ with app.app_context():
   try:
     if full_market_data:
       results = cache.add_to_currency_cache(full_market_data, from_scratch=from_scratch)
-      #usage = request_cpu_usage()
+      usage = request_cpu_usage()
       print(results, flush=True)
-      #print(usage, flush=True)
+      print(usage, flush=True)
   except Exception as e:
     print(f"add_to_currency_cache: {e}", flush=True)
