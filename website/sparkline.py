@@ -5,16 +5,14 @@ import base64
 from io import BytesIO
 from IPython.display import HTML
 from datetime import date, timedelta, timezone, datetime, time
-import os
 import requests
 from bs4 import BeautifulSoup
 import json
 import matplotlib.dates as mdates
-from . import crypto_lookup
-
 import numpy as np
+import sys
 
-def get_market_data(coin_id=str, interval=str, time_range=int):
+def get_market_data(coin_id=str, interval=str, time_range=int, spark=False):
     # Interval: hour (60*60), day (60*60*24), month (60*60*24*30), year (60*60*24*30*12)
     unix_now = int(datetime.now(timezone.utc).timestamp())
 
@@ -30,10 +28,20 @@ def get_market_data(coin_id=str, interval=str, time_range=int):
     query_delta = time_range * sec
     query_start = unix_now - query_delta
 
-    response = requests.request(method='GET', url=f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart/range?vs_currency=usd&from={query_start}&to={unix_now}")
+    if not spark:
+      url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart/range?vs_currency=usd&from={query_start}&to={unix_now}"
+    else:
+      url = f"https://api.coingecko.com/api/v3/coins/{coin_id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=true"
+
+    response = requests.request(method='GET', url=url)
     if response.status_code == 200:
         soup = BeautifulSoup(response.content, "html.parser")
-        return json.loads(soup.string)
+        data = json.loads(soup.string)
+
+        if not spark:
+          return data
+        else:
+          return data['market_data']['sparkline_7d']['price']
     return None
 
 
@@ -103,8 +111,13 @@ def market_graph(coin_id=str, interval=str, time_range=int, figsize=(20, 6), cla
     """
     full_data = get_market_data(coin_id, interval, time_range)
     price_data = full_data['prices']
-    cap_data = full_data['market_caps']
-    volume_data = full_data['total_volumes']
+    if len(price_data) == 0:
+      data = get_market_data(coin_id, interval, time_range, spark=True)
+      if len(data) > 0:
+        return sparkline(data, figsize=(20, 6), class_add=class_add, show_ticks=True, hours=168, **kwags)
+    # cap_data = full_data['market_caps']
+    # volume_data = full_data['total_volumes']
+
 
 
     price_data_x = []
@@ -113,16 +126,18 @@ def market_graph(coin_id=str, interval=str, time_range=int, figsize=(20, 6), cla
         price_data_x.append(u)
 
 
-
     price_data_y = [x[1] for x in price_data]
+
+    print(f'Full Data: {price_data_y}', file=sys.stderr)
 
     _, ax = plt.subplots(1, 1, figsize=figsize, **kwags)
 
     color = 'k'
-    if price_data[0][1] < price_data[len(price_data) - 1][1]:
-        color = "g"
-    else:
-        color = 'r'
+    if price_data_y:
+      if price_data_y[0] < price_data_y[len(price_data_y) - 1]:
+          color = "g"
+      else:
+          color = 'r'
 
     ax.plot(np.array(price_data_x), np.array(price_data_y), color)
 
@@ -141,7 +156,10 @@ def market_graph(coin_id=str, interval=str, time_range=int, figsize=(20, 6), cla
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
 
     # Set Y-axis tick labels to the high and low price points
-    ax.set_yticks([max(price_data_y), min(price_data_y)])
+    try:
+      ax.set_yticks([max(price_data_y), min(price_data_y)])
+    except Exception as e:
+      print(f'Full Data: {e}', file=sys.stderr)
 
     ax.tick_params(axis="y",direction="in", pad=-40)
 
