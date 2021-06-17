@@ -1,6 +1,5 @@
-<label for="timezone" class="text-white">Timezone</label>
-<select class="custom-select" name="timezone" id="timezone">
-  <option value="" selected disabled hidden>{{ settings['timezone'] }}</option>
+<select class="form-select" name="timezone" id="timezone">
+  <option value="" selected disabled hidden>Timezone: {{ settings['timezone'] }}</option>
   <option value="UTC">UTC/GMT</option>
   <option style="background-color:#cccccc; color:black;" value = "" disabled="disabled">[ United States ]</option>
   <option value="US/Alaska">Alaska</option>

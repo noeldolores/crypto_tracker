@@ -1,6 +1,5 @@
-<label for="timezone" class="text-white">Currency</label>
-<select class="custom-select" name="displaycurrency" id="displaycurrency">
-  <option value="" selected disabled hidden>{{ settings['displaycurrency'] }}</option>
+<select class="form-select" name="displaycurrency" id="displaycurrency">
+  <option value="" selected disabled hidden>Currency: {{ settings['displaycurrency'] }}</option>
   <option value="USD">United States Dollar</option>
   <option value="EUR">Euro</option>
   <option value="GBP">United Kingdom Pounds</option>
@@ -35,3 +34,4 @@
   <option value="THB">Thailand Baht</option>
   <option value="TRY">Turkey Lira</option>
 </select>
+

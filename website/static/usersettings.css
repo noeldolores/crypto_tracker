@@ -33,7 +33,8 @@
   background-color: white;
 }
 
-.dropdown-menu {
+.dropdown-menu,
+.custom-select {
   width: 100%;
 }
 

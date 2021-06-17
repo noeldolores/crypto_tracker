@@ -1,7 +1,11 @@
-*:not(.container) {
-  box-sizing: border-box;
+.cap-top {
+  top: 0;
+  bottom: auto;
+  margin-bottom: 1em;
 }
-
-.custom-border{
-  border:3px solid black;
-} 
+.row>*{
+  padding: 0;
+}
+.table {
+  margin-bottom: 0;
+}

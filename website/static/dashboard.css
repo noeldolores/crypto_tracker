@@ -1,0 +1,7 @@
+*:not(.container) {
+  box-sizing: border-box;
+}
+
+.custom-border{
+  border:3px solid black;
+} 

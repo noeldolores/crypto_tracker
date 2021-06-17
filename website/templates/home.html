@@ -1,245 +1,175 @@
 {% extends "base.html" %}
 
-{% block title %}Home - CryptoSearch{% endblock %}
-{% block script %}
-<script>
-var a;
-$(document).ready(function(){
-  $('.modal-quant').click(function(){
-    a=$(this).attr('value');
-  });
-});
+{% block title %}CryptoSearch{% endblock %}
 
-$(document).ready(function(){
-  $('#savequant').click(function() {
-    $('#savequant').attr('value', a);
-  });
-});
-
-</script>
-{% endblock script %}
-{% block content%}
+{% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
-
-<div class="p-2"></div>
-{% if user %}
-  {% if user.is_authenticated %}
-  <h1 align="center" class="text-white p-3">Dashboard ({{ settings['displaycurrency'] }})</h1>
-  <br />
-    {% if favorites != None %}
-    <div class="container-fluid rounded custom-border" style="background-color:#ffffff">
-      {% if dashboard_summary['value']|float > 0|float %}
-      <div class="row justify-content-around" style="margin:-1em; margin-bottom:-1em">
-        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
-          <div class="row justify-content-center bg-dark text-white rounded">
-            <h2>TOTAL</h2>
-          </div>
-          <div class="row justify-content-center">
-            <h4>{{ dashboard_summary['value'] }}</h4>
-          </div>
-        </div>
-
-        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
-          <div class="row justify-content-center bg-dark text-white rounded">
-            <h2>24 HOUR</h2>
-          </div>
-          <div class="row justify-content-center num">
-            <h4>{{ "{:.4f}".format(dashboard_summary['change24h']) }}%</h4>
-          </div>
-        </div>
-
-        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
-          <div class="row justify-content-center bg-dark text-white rounded">
-            <h2>7 DAY</h2>
-          </div>
-          <div class="row justify-content-center num">
-            <h4>{{ "{:.4f}".format(dashboard_summary['change7d']) }}%</h4>
-          </div>
-        </div>
-
-        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
-          <div class="row justify-content-center bg-dark text-white rounded">
-            <h2>30 DAY</h2>
-          </div>
-          <div class="row justify-content-center num">
-            <h4>{{ "{:.4f}".format(dashboard_summary['change30d']) }}%</h4>
-          </div>
-        </div>
+<br />
+<div class="container-fluid">
+  <div class="row justify-content-around my-4">
+    <div class="col-s-12 col-md-9 col-lg-9 topcol">
+      <div class="row">
+        <h2 class="text-center text-white"> Top % Movers </h2>
       </div>
-      {% endif %}
-
-      <div class="row justify-content-around">
-      {%for i in range(0, favorites|length)%}
-        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
-
-          <div class="row p-3 border justify-content-center bg-dark text-white rounded">
-            {{ favorites[i][0]['name'] }} ({{ favorites[i][0]['symbol'] }})
+      <div class="row">
+      
+        <div id="carouselExampleCaptions" class="carousel carousel-dark slide" data-bs-ride="carousel">
+          <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="3" aria-label="Slide 4"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="4" aria-label="Slide 5"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="5" aria-label="Slide 6"></button>
           </div>
 
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            Current
+          <div class="carousel-inner bg-dark border border-2 rounded">
+
+            <div class="carousel-item active">
+              {{  carousel['top_1h_growth']['graph']  }}
+              <div class="carousel-caption cap-top text-white text-start">
+                <h3> 1 Hour </h3>
+              </div>
+              <div class="carousel-caption cap-top text-white text-end">
+                <h3> {{ carousel['top_1h_growth']['id'] }}: {{ carousel['top_1h_growth']['current_price'] }} </h3>
+              </div>
             </div>
-            <div class="col p-3 border bg-dark text-white rounded">
-            {{ favorites[i][0]['current_price'] }}
+
+            <div class="carousel-item">
+              {{  carousel['top_24h_growth']['graph']  }}
+              <div class="carousel-caption cap-top text-white text-start">
+                <h3> 24 Hours </h3>
+              </div>
+              <div class="carousel-caption cap-top text-white text-end">
+                <h3> {{  carousel['top_24h_growth']['id']  }}: {{ carousel['top_24h_growth']['current_price'] }} </h3>
+              </div>
             </div>
+
+            <div class="carousel-item">
+              {{  carousel['top_7d_growth']['graph']  }}
+              <div class="carousel-caption cap-top text-white text-start">
+                <h3> 7 Day </h3>
+              </div>
+              <div class="carousel-caption cap-top text-white text-end">
+                <h3> {{  carousel['top_7d_growth']['id']  }}: {{ carousel['top_7d_growth']['current_price'] }} </h3>
+              </div>
+            </div>
+
+            <div class="carousel-item">
+              {{  carousel['top_30d_growth']['graph']  }}
+              <div class="carousel-caption cap-top text-white text-start">
+                <h3> 30 Day </h3>
+              </div>
+              <div class="carousel-caption cap-top text-white text-end">
+                <h3> {{  carousel['top_30d_growth']['id']  }}: {{ carousel['top_30d_growth']['current_price'] }} </h3>
+              </div>
+            </div>
+
+            <div class="carousel-item">
+              {{  carousel['top_200d_growth']['graph']  }}
+              <div class="carousel-caption cap-top text-white text-start">
+                <h3> 200 Day </h3>
+              </div>
+              <div class="carousel-caption cap-top text-white text-end">
+                <h3> {{  carousel['top_200d_growth']['id']  }}: {{ carousel['top_200d_growth']['current_price'] }} </h3>
+              </div>
+            </div>
+
+            <div class="carousel-item">
+              {{  carousel['top_1y_growth']['graph']  }}
+              <div class="carousel-caption cap-top text-white text-start">
+                <h3> 1 Year </h3>
+              </div>
+              <div class="carousel-caption cap-top text-white text-end">
+                <h3> {{  carousel['top_1y_growth']['id']  }}: {{ carousel['top_1y_growth']['current_price'] }} </h3>
+              </div>
+            </div>
+
           </div>
 
-          {% if settings['dashboard']['1hour'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            1 Hour
-            </div>
-            <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['price_change_percentage_1h_in_currency'] }}%
-            </div>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['24hours'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            24 Hour
-            </div>
-            <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['price_change_percentage_24h_in_currency'] }}%
-            </div>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['7days'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            7 Day
-            </div>
-            <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['price_change_percentage_7d_in_currency'] }}%
-            </div>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['14days'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            14 Day
-            </div>
-            <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['price_change_percentage_14d_in_currency'] }}%
-            </div>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['30days'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            30 Day
-            </div>
-            <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['price_change_percentage_30d_in_currency'] }}%
-            </div>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['200days'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            200 Day
-            </div>
-            <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['price_change_percentage_200d_in_currency'] }}%
-            </div>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['1year'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            1 Year
-            </div>
-            <div class="col p-3 border bg-dark num rounded">
-            {{ favorites[i][0]['price_change_percentage_1y_in_currency'] }}%
-            </div>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['quantity'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            Owned
-            </div>
-            <button type="button" class="col p-3 border bg-dark modal-quant text-white text-left rounded" value="{{favorites[i][0]['id']}},{{i}}" data-toggle="modal" href="#exampleModal">
-            {{ favorites[i][1] }}
-            </button>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['netvalue'] %}
-          <div class="row">
-            <div class="col p-3 border bg-dark text-white rounded">
-            Value
-            </div>
-            <div class="col p-3 border bg-dark text-white rounded">
-            {{ favorites[i][2] }}
-            </div>
-          </div>
-          {% endif %}
-
-          {% if settings['dashboard']['sparkline'] %}
-          <div class="row">
-            <div class="col border bg-dark text-white text-center">
-              7 Day &#8722; High: {{ favorites[i][0]['sparkline_in_7d'][1] }} &#8722; Low: {{ favorites[i][0]['sparkline_in_7d'][2] }}
-            </div>
-          </div>
-          <div class="row">
-            <div class="col border bg-dark text-white">
-              {{ favorites[i][0]['sparkline_in_7d'][0] }}
-            </div>
-          </div>
-          {% endif %}
-
-          <form method='POST'>
-            <button type="submit" class="btn btn-secondary btn-sm btn-block bg-dark rounded" value="{{ favorites[i][0]['id'] }}" name='remove_favorite'>Remove {{ favorites[i][0]['symbol'] }}</button>
-          </form>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
         </div>
-      {% endfor %}
-    {% endif %}
-    </div>
-  {% else %}
-    <h4 align="center" class="text-white p-3">Guest Account</h4>
-    <form method='POST'>
-      <div class="container">
-        <div class="row">
-          <div class="col text-center">
-            <button type="submit" class="btn btn-primary" name="guest" value="guest">Try it out!</button>
-          </div>
-        </div>
+
       </div>
-    </form>
-  {% endif %}
-{% endif %}
-</div>
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Enter Quantity</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form method='POST'>
-        <div class="modal-body">
-          <div class="form-group">
-            <input type="number" step="any" min="0" class="form-control" name="quantity" placeholder="0.000"/>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit"  class="btn btn-primary" id="savequant" name="to_save">Save changes</button>
-        </div>
-      </form>
     </div>
   </div>
 </div>
+
+<br />
+<br />
+
+<div class="container-fluid">
+  <div class="row justify-content-around">
+    <div class="col-s-12 col-md-9 col-lg-9 topcol">
+      <span class="text-start text-white"> Top 25 Cryptocurrencies </span>
+      <form method='POST' class="d-grid gap-2 d-md-block">
+        <button class="btn btn-dark" type="submit" name="table_switch" value="price">Price</button>
+        <button class="btn btn-dark" type="submit" name="table_switch" value="change1h">1 Hour</button>
+        <button class="btn btn-dark" type="submit" name="table_switch" value="change24h">24 Hour</button>
+        <button class="btn btn-dark" type="submit" name="table_switch" value="change7d">7 Day</button>
+        <button class="btn btn-dark" type="submit" name="table_switch" value="change30d">30 Day</button>
+        <button class="btn btn-dark" type="submit" name="table_switch" value="change200d">200 Day</button>
+        <button class="btn btn-dark" type="submit" name="table_switch" value="change1y">1 Year</button>
+      </form>
+    </div>
+  </div>
+<div>
+
+<div class="container-fluid">
+  <div class="row justify-content-around">
+
+    <div class="col-s-12 col-md-9 col-lg-9 topcol">
+      <div class="row">
+
+        <div class="table-responsive border border-2 rounded">
+          <table class="table table-dark table-striped">
+
+            <thead >
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Symbol</th>
+                <th scope="col">Price</th>
+                <th scope="col">1H</th>
+                <th scope="col">24H</th>
+                <th scope="col">7D</th>
+                <th scope="col">30D</th>
+                <th scope="col">200D</th>
+                <th scope="col">1Y</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for  i in range(0, table|length)%}
+              <tr>
+                <th scope="row">{{ i + 1 }}</th>
+                <td>  {{ table[i]['coin_id'] }}  </td>
+                <td>  {{ table[i]['symbol'] }}  </td>
+                <td>  {{ table[i]['price'] }}  </td>
+                <td class = "num">  {{ table[i]['change1h'] }}%  </td>
+                <td class = "num">  {{ table[i]['change24h'] }}%  </td>
+                <td class = "num">  {{ table[i]['change7d'] }}%  </td>
+                <td class = "num">  {{ table[i]['change30d'] }}%  </td>
+                <td class = "num">  {{ table[i]['change200d'] }}%  </td>
+                <td class = "num">  {{ table[i]['change1y'] }}%  </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+
+          </table>
+        </div>
+
+      </div>
+    </div>
+    
+  </div>
+</div>
+
 {% endblock %}

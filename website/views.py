@@ -5,10 +5,12 @@ import json
 import sys
 from currency_converter import CurrencyConverter
 import pytz
+from sqlalchemy.orm import query
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db, crypto_lookup, cache, sparkline
 from .models import User, Currency, CurrencyCache
 import time
+from sqlalchemy import desc, select
 
 
 views = Blueprint('views', __name__)
@@ -75,7 +77,7 @@ def search(query):
       coin['price_change_percentage_30d_in_currency'] = crypto_lookup.DigitLimit(_30d, max_len=6).out
       coin['price_change_percentage_200d_in_currency'] = crypto_lookup.DigitLimit(_200d, max_len=6).out
       coin['price_change_percentage_1y_in_currency'] = crypto_lookup.DigitLimit(_1y, max_len=6).out
-      coin['sparkline_in_7d'] = (sparkline.sparkline(spark), crypto_lookup.DigitLimit(max(spark), max_len=10).out, crypto_lookup.DigitLimit(min(spark), max_len=10).out)
+      coin['sparkline_in_7d'] = (sparkline.sparkline(data=spark), crypto_lookup.DigitLimit(max(spark), max_len=10).out, crypto_lookup.DigitLimit(min(spark), max_len=10).out)
 
     return search_results
   
@@ -83,7 +85,7 @@ def search(query):
   return search_results
 
 
-def load_favorites_data():
+def load_favorites_data(refresh=False):
   if len(current_user.currencies) > 0:
     if 'favorites' not in session:
       session['favorites'] = []
@@ -103,9 +105,9 @@ def load_favorites_data():
         coin_quantity = str(coin_quantity).strip('0')
 
       coin_id = user_currencies[i].coin_id
-      load_cache, age = cache.CurrencyCache_Query(coin_id)
+      load_cache, _ = cache.CurrencyCache_Query(coin_id)
       if load_cache is not None:
-        if "old" not in age:
+        if not refresh:
           spark = load_cache.sparkline
           if type(spark) == dict:
             spark = load_cache.sparkline['price']
@@ -122,7 +124,7 @@ def load_favorites_data():
             'price_change_percentage_30d_in_currency': crypto_lookup.DigitLimit(load_cache.change30d, max_len=6).out,
             'price_change_percentage_200d_in_currency': crypto_lookup.DigitLimit(load_cache.change200d, max_len=6).out,
             'price_change_percentage_1y_in_currency': crypto_lookup.DigitLimit(load_cache.change1y, max_len=6).out,
-            'sparkline_in_7d': (sparkline.sparkline(spark), crypto_lookup.DigitLimit(max(spark), 
+            'sparkline_in_7d': (sparkline.sparkline(data=spark), crypto_lookup.DigitLimit(max(spark), 
                                 max_len=10).out, crypto_lookup.DigitLimit(min(spark), max_len=10).out)
           }
 
@@ -155,7 +157,7 @@ def load_favorites_data():
           spark = data['sparkline_in_7d']
           if type(spark) == dict:
             spark = data['sparkline_in_7d']['price']
-          data['sparkline_in_7d'] = (sparkline.sparkline(spark), crypto_lookup.DigitLimit(max(spark), max_len=10).out, crypto_lookup.DigitLimit(min(spark), max_len=10).out)
+          data['sparkline_in_7d'] = (sparkline.sparkline(data=spark), crypto_lookup.DigitLimit(max(spark), max_len=10).out, crypto_lookup.DigitLimit(min(spark), max_len=10).out)
 
           num = float(coin_quantity) * float(data['current_price'])
           coin_value = crypto_lookup.DigitLimit(num, max_len=10).out
@@ -224,8 +226,8 @@ def remove_from_favorites(to_remove):
 
 
 def load_dashboard_summary(currency_locale):
-  usd_rate = convert_currency(currency_locale)
   if current_user.is_authenticated:
+    usd_rate = convert_currency(currency_locale)
     dashboard_summary = {
       'value': 0,
       'change24h': 0,
@@ -233,16 +235,17 @@ def load_dashboard_summary(currency_locale):
       'change30d': 0
     }
   
-  if current_user.role != "guest":
-    if current_user.value:
-      dashboard_summary['value'] = apply_conversion_rate(num=current_user.value, rate=usd_rate, max_digits=10)
-    if current_user.change24h:
-      dashboard_summary['change24h'] = current_user.change24h
-    if current_user.change7d:
-      dashboard_summary['change7d'] = current_user.change7d
-    if current_user.change30d:
-      dashboard_summary['change30d'] = current_user.change30d
-  return dashboard_summary
+    if current_user.role != "guest":
+      if current_user.value:
+        dashboard_summary['value'] = apply_conversion_rate(num=current_user.value, rate=usd_rate, max_digits=10)
+      if current_user.change24h:
+        dashboard_summary['change24h'] = current_user.change24h
+      if current_user.change7d:
+        dashboard_summary['change7d'] = current_user.change7d
+      if current_user.change30d:
+        dashboard_summary['change30d'] = current_user.change30d
+    return dashboard_summary
+  return None
   
 
 def update_dashboard_summary(update_list):
@@ -326,60 +329,65 @@ def currency_cache_query(search):
 
 
 def init_user_settings():
-  if current_user.is_authenticated:
-    if current_user.settings is not None:
-      user_settings = json.loads(current_user.settings)
-      if 'search' not in user_settings:
-        user_settings['dashboard']['sparkline'] = False
-        user_settings['dashboard']['1hour'] = False
-        user_settings['dashboard']['14days'] = False
-        user_settings['dashboard']['200days'] = False
-        user_settings['dashboard']['1year'] = False
+  if not current_user.is_authenticated:
+    user_settings = {
+      'timezone':'UTC',
+      'displaycurrency':'USD',
+      'dashboard': {
+        'grid':True,
+        'table':False,
+        'sparkline':False,
+        '1hour':False,
+        '24hours':True,
+        '7days':True,
+        '14days':False,
+        '30days':True,
+        '200days':False,
+        '1year':False,
+        'quantity':True,
+        'netvalue':True
+      },
+      'search': {
+        'sparkline':True,
+        '1hour':True,
+        '24hours':True,
+        '7days':True,
+        '14days':False,
+        '30days':True,
+        '200days':False,
+        '1year':True,
+      }
+    }
+  elif current_user.settings is not None:
+    user_settings = json.loads(current_user.settings)
+    if 'search' not in user_settings:
+      user_settings['dashboard']['sparkline'] = False
+      user_settings['dashboard']['1hour'] = False
+      user_settings['dashboard']['14days'] = False
+      user_settings['dashboard']['200days'] = False
+      user_settings['dashboard']['1year'] = False
 
-        user_settings['search'] = {
-          'sparkline':True,
-          '1hour':True,
-          '24hours':True,
-          '7days':True,
-          '14days':False,
-          '30days':True,
-          '200days':False,
-          '1year':True,
-        }
-        current_user.settings = json.dumps(user_settings)
-        db.session.commit()
-    else:
-      user_settings = {
-        'timezone':'UTC',
-        'displaycurrency':'USD',
-        'dashboard': {
-          'grid':True,
-          'table':False,
-          'sparkline':False,
-          '1hour':False,
-          '24hours':True,
-          '7days':True,
-          '14days':False,
-          '30days':True,
-          '200days':False,
-          '1year':False,
-          'quantity':True,
-          'netvalue':True
-        },
-        'search': {
-          'sparkline':True,
-          '1hour':True,
-          '24hours':True,
-          '7days':True,
-          '14days':False,
-          '30days':True,
-          '200days':False,
-          '1year':True,
-        }
+      user_settings['search'] = {
+        'sparkline':True,
+        '1hour':True,
+        '24hours':True,
+        '7days':True,
+        '14days':False,
+        '30days':True,
+        '200days':False,
+        '1year':True,
       }
       current_user.settings = json.dumps(user_settings)
       db.session.commit()
-    return user_settings
+  return user_settings
+
+
+def get_time(timezone):
+  utc_now = pytz.utc.localize(datetime.utcnow())
+  if current_user.is_authenticated:
+    return utc_now.astimezone(pytz.timezone(timezone)).strftime("%m/%d/%Y %H:%M:%S")
+  else:
+    return utc_now.strftime("%m/%d/%Y %H:%M:%S")
 
 
 
@@ -390,22 +398,145 @@ def redirect_to_home():
 
 @views.route('/home', methods=['GET', 'POST'])
 def home():
+  search_results = None
+  in_favorites = None
+  user_settings = init_user_settings()
+  session['displaycurrency'] = user_settings['displaycurrency']
+  time = get_time(user_settings['timezone'])
+  usd_rate = convert_currency(session['displaycurrency'])
+  active_table = "price"
+
+  top_1h = CurrencyCache.query.order_by(desc(CurrencyCache.change1h)).limit(1).first()
+  top_24h = CurrencyCache.query.order_by(desc(CurrencyCache.change24h)).limit(1).first()
+  top_7d = CurrencyCache.query.order_by(desc(CurrencyCache.change7d)).limit(1).first()
+  top_30d = CurrencyCache.query.order_by(desc(CurrencyCache.change30d)).limit(1).first()
+  top_200d = CurrencyCache.query.order_by(desc(CurrencyCache.change200d)).limit(1).first()
+  top_1y = CurrencyCache.query.order_by(desc(CurrencyCache.change1y)).limit(1).first()
+
+  top_1h_growth = {
+    'id': top_1h.coin_id.capitalize(),
+    'graph': sparkline.market_graph(coin_id=top_1h.coin_id, interval='hour', time_range=12, figsize=(20,6), class_add="d-block w-100"),
+    'current_price': apply_conversion_rate(num=top_1h.price, rate=usd_rate, max_digits=10),
+    'change': crypto_lookup.DigitLimit(top_1h.change1h, max_len=6).out
+  }
+  top_24h_growth = {
+    'id': top_24h.coin_id.capitalize(),
+    'graph': sparkline.market_graph(coin_id=top_24h.coin_id, interval='hour', time_range=24, figsize=(20,6), class_add="d-block w-100"),
+    'current_price': apply_conversion_rate(num=top_24h.price, rate=usd_rate, max_digits=10),
+    'change': crypto_lookup.DigitLimit(top_24h.change24h, max_len=6).out
+  }
+  top_7d_growth = {
+    'id': top_7d.coin_id.capitalize(),
+    'graph': sparkline.market_graph(coin_id=top_7d.coin_id, interval='day', time_range=7, figsize=(20,6), class_add="d-block w-100"),
+    'current_price': apply_conversion_rate(num=top_7d.price, rate=usd_rate, max_digits=10),
+    'change': crypto_lookup.DigitLimit(top_7d.change24h, max_len=6).out
+  }
+  top_30d_growth = {
+    'id': top_30d.coin_id.capitalize(),
+    'graph': sparkline.market_graph(coin_id=top_30d.coin_id, interval='day', time_range=30, figsize=(20,6), class_add="d-block w-100"),
+    'current_price': apply_conversion_rate(num=top_30d.price, rate=usd_rate, max_digits=10),
+    'change': crypto_lookup.DigitLimit(top_30d.change24h, max_len=6).out
+  }
+  top_200d_growth = {
+    'id': top_200d.coin_id.capitalize(),
+    'graph': sparkline.market_graph(coin_id=top_200d.coin_id, interval='day', time_range=200, figsize=(20,6), class_add="d-block w-100"),
+    'current_price': apply_conversion_rate(num=top_200d.price, rate=usd_rate, max_digits=10),
+    'change': crypto_lookup.DigitLimit(top_200d.change24h, max_len=6).out
+  }
+  top_1y_growth = {
+    'id': top_1y.coin_id.capitalize(),
+    'graph': sparkline.market_graph(coin_id=top_1y.coin_id, interval='year', time_range=1, figsize=(20,6), class_add="d-block w-100"),
+    'current_price': apply_conversion_rate(num=top_1y.price, rate=usd_rate, max_digits=10),
+    'change': crypto_lookup.DigitLimit(top_1y.change24h, max_len=6).out
+  }
+  carousel = {
+    'top_1h_growth': top_1h_growth,
+    'top_24h_growth': top_24h_growth,
+    'top_7d_growth': top_7d_growth,
+    'top_30d_growth': top_30d_growth,
+    'top_200d_growth': top_200d_growth,
+    'top_1y_growth': top_1y_growth,
+  }
+
+  if request.method == 'POST':
+    if 'search' in request.form:
+      query = str(request.form['search']).lower()
+      search_results = search(query)
+      if current_user.is_authenticated:
+        in_favorites = favorites_check(search_results)
+                              
+    elif 'add_favorites' in request.form:
+      to_add = request.form['add_favorites']
+
+      if current_user.role == "guest":
+        if len(current_user.currencies) < 6:
+          session.pop('_flashes', None)
+          added_to_favorites = add_to_favorites(to_add)
+        else:
+           added_to_favorites = False
+           flash("Guest account can only have 6 favorites.", category='error')
+      else:
+        added_to_favorites = add_to_favorites(to_add)
+        session.pop('_flashes', None)
+
+      if added_to_favorites:
+        flash(f"{to_add} has been added to favorites!", category='success')
+      elif current_user.role != "guest":
+        flash("Oops! Something went wrong!", category='error')
+
+    elif 'table_switch' in request.form:
+      active_table = request.form['table_switch']
+
+  if active_table == "price":
+    table_data = CurrencyCache.query.order_by(desc(CurrencyCache.price)).limit(25).all()
+  if active_table == "change1h":
+    table_data = CurrencyCache.query.order_by(desc(CurrencyCache.change1h)).limit(25).all()
+  if active_table == "change24h":
+    table_data = CurrencyCache.query.order_by(desc(CurrencyCache.change24h)).limit(25).all()
+  if active_table == "change7d":
+    table_data = CurrencyCache.query.order_by(desc(CurrencyCache.change7d)).limit(25).all()
+  if active_table == "change30d":
+    table_data = CurrencyCache.query.order_by(desc(CurrencyCache.change30d)).limit(25).all()
+  if active_table == "change200d":
+    table_data = CurrencyCache.query.order_by(desc(CurrencyCache.change200d)).limit(25).all()
+  if active_table == "change1y":
+    table_data = CurrencyCache.query.order_by(desc(CurrencyCache.change1y)).limit(25).all()
+
+  table = []
+  for coin in table_data:
+    table.append(
+      {
+        'coin_id': coin.coin_id,
+        'symbol': coin.symbol,
+        'price': crypto_lookup.DigitLimit(coin.price, max_len=12).out,
+        'change1h': crypto_lookup.DigitLimit(coin.change1h, max_len=12).out,
+        'change24h': crypto_lookup.DigitLimit(coin.change24h, max_len=12).out,
+        'change7d': crypto_lookup.DigitLimit(coin.change7d, max_len=12).out,
+        'change30d': crypto_lookup.DigitLimit(coin.change30d, max_len=12).out,
+        'change200d': crypto_lookup.DigitLimit(coin.change200d, max_len=12).out,
+        'change1y': crypto_lookup.DigitLimit(coin.change1y, max_len=12).out
+      }
+    )
+
+  return render_template("home.html", search_results=search_results, user=current_user, in_favorites=in_favorites, 
+                          settings=user_settings, table=table, time=time, carousel=carousel)
+
+
+
+@views.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
   stopwatch = timer()
-  dashboard_summary = None
   search_results = None
   sorted_favorites = None
   in_favorites = False
-  show_time = False
-  utc_now = pytz.utc.localize(datetime.utcnow())
+
+  user_settings = init_user_settings()
+  time = get_time(user_settings['timezone'])
+  session['displaycurrency'] = user_settings['displaycurrency']
+  dashboard_summary = load_dashboard_summary(user_settings['displaycurrency'])
 
   if current_user.is_authenticated:
-    user_settings = init_user_settings()
-    session['displaycurrency'] = user_settings['displaycurrency']
-    dashboard_summary = load_dashboard_summary(session['displaycurrency'])
-    time = utc_now.astimezone(pytz.timezone(str(user_settings['timezone']))).strftime("%m/%d/%Y %H:%M:%S")
-
     if len(current_user.currencies) > 0:
-      show_time = True
       sorted_favorites = load_favorites_data()
       try:
         if current_user.role != "guest":
@@ -420,7 +551,6 @@ def home():
 
     stopwatch = timer(stopwatch, f'Initial load-in with {len(current_user.currencies)} currencies.')
   else:
-    time = utc_now.strftime("%m/%d/%Y %H:%M:%S")
     user_settings = None
     session['displaycurrency'] = "USD"
 
@@ -441,7 +571,6 @@ def home():
       search_results = search(query)
 
       if current_user.is_authenticated:
-        show_time = True
         in_favorites = favorites_check(search_results)
 
       stopwatch = timer(stopwatch, f'Search function "{query}": finish')
@@ -467,7 +596,7 @@ def home():
          flash("Oops! Something went wrong!", category='error')
 
       stopwatch = timer(stopwatch, f'Add to Favorites function: finish')
-      return redirect(url_for('views.home'))
+      return redirect(url_for('views.dashboard'))
 
     elif 'remove_favorite' in request.form:
       stopwatch = timer(stopwatch, f'Remove from Favorites function: start')
@@ -481,7 +610,7 @@ def home():
         flash("Oops! Something went wrong!", category='error')
 
       stopwatch = timer(stopwatch, f'Remove from Favorites function: finish')
-      return redirect(url_for('views.home'))
+      return redirect(url_for('views.dashboard'))
 
     elif 'quantity' in request.form:
       stopwatch = timer(stopwatch, f'Adjust quantity function: start')
@@ -515,8 +644,8 @@ def home():
       session.pop('favorites', None)
 
       stopwatch = timer(stopwatch, f'Adjust quantity function: finish')
-      return render_template('home.html', user=current_user, in_favorites=in_favorites, dashboard_summary=dashboard_summary,
-                              favorites=sorted_favorites, time=time, show_time=show_time, settings=user_settings)
+      return render_template('dashboard.html', user=current_user, in_favorites=in_favorites, dashboard_summary=dashboard_summary,
+                              favorites=sorted_favorites, time=time, settings=user_settings)
 
     if 'guest' in request.form:
       if not current_user.is_authenticated:
@@ -529,18 +658,17 @@ def home():
             session.pop('_flashes', None)
             flash('Logged in successfuly!', category='success')
             login_user(user, remember=True)
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.dashboard/'))
 
   stopwatch = timer(stopwatch, f'Everything ready to render.')
-  return render_template('home.html', user=current_user, search_results=search_results, in_favorites=in_favorites, 
-                          favorites=sorted_favorites, time=time, show_time=show_time, settings=user_settings, dashboard_summary=dashboard_summary)
+  return render_template('dashboard.html', user=current_user, search_results=search_results, in_favorites=in_favorites, 
+                          favorites=sorted_favorites, time=time, settings=user_settings, dashboard_summary=dashboard_summary)
 
 
 
 @views.route('/usersettings', methods=['GET', 'POST'])
 @login_required
 def usersettings():
-  show_time = False
   if current_user.is_authenticated:
     user_settings = init_user_settings()
 
@@ -552,9 +680,8 @@ def usersettings():
 
         utc_now = pytz.utc.localize(datetime.utcnow())
         time = utc_now.astimezone(pytz.timezone(str(user_settings['timezone']))).strftime("%m/%d/%Y %H:%M:%S")
-        show_time = True
 
-        return render_template('usersettings.html', search_results=search_results, time=time, show_time=show_time,
+        return render_template('usersettings.html', search_results=search_results, time=time,
                                 user=current_user, firstName=current_user.firstName, email=current_user.email, settings=user_settings, in_favorites=in_favorites)
 
       changes = []
@@ -695,7 +822,6 @@ def usersettings():
 @views.route('/deleteaccount', methods=['GET', 'POST'])
 @login_required
 def deleteaccount():
-  show_time = False
   if request.method == 'POST':
     if current_user.is_authenticated:
 
@@ -706,10 +832,10 @@ def deleteaccount():
         if check_password_hash(current_user.password, password1):
           db.session.delete(current_user)
           db.session.commit()
-          return redirect(url_for('views.home'))
+          return redirect(url_for('/'))
         else:
           flash('Incorrect Password, please try again.', category='error')
       else:
         flash('Incorrect Email, please try again.', category='error')
 
-  return render_template('deleteaccount.html', user=current_user, show_time=show_time)
+  return render_template('deleteaccount.html', user=current_user)

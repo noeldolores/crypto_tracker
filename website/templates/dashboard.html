@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Home - CryptoSearch{% endblock %}
+{% block script %}
+<script>
+var a;
+$(document).ready(function(){
+  $('.modal-quant').click(function(){
+    a=$(this).attr('value');
+  });
+});
+
+$(document).ready(function(){
+  $('#savequant').click(function() {
+    $('#savequant').attr('value', a);
+  });
+});
+
+</script>
+{% endblock script %}
+{% block content%}
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+
+<div class="p-2"></div>
+{% if user %}
+  {% if user.is_authenticated %}
+  <h1 align="center" class="text-white p-3">Dashboard ({{ settings['displaycurrency'] }})</h1>
+  
+  <br />
+    {% if favorites != None %}
+    <div class="container-fluid rounded custom-border" style="background-color:#ffffff">
+      {% if dashboard_summary['value']|float > 0|float %}
+      <div class="row justify-content-around" style="margin:-1em; margin-bottom:-1em">
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+          <div class="row justify-content-center bg-dark text-white rounded">
+            <h2>TOTAL</h2>
+          </div>
+          <div class="row justify-content-center">
+            <h4>{{ dashboard_summary['value'] }}</h4>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+          <div class="row justify-content-center bg-dark text-white rounded">
+            <h2>24 HOUR</h2>
+          </div>
+          <div class="row justify-content-center num">
+            <h4>{{ "{:.4f}".format(dashboard_summary['change24h']) }}%</h4>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1" style="margin-bottom:-1em">
+          <div class="row justify-content-center bg-dark text-white rounded">
+            <h2>7 DAY</h2>
+          </div>
+          <div class="row justify-content-center num">
+            <h4>{{ "{:.4f}".format(dashboard_summary['change7d']) }}%</h4>
+          </div>
+        </div>
+
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
+          <div class="row justify-content-center bg-dark text-white rounded">
+            <h2>30 DAY</h2>
+          </div>
+          <div class="row justify-content-center num">
+            <h4>{{ "{:.4f}".format(dashboard_summary['change30d']) }}%</h4>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="row justify-content-around">
+      {%for i in range(0, favorites|length)%}
+        <div class="col-xs-6 col-sm-9 col-md-4 col-lg-5 col-xl-2 col-xxl-1">
+
+          <div class="row p-3 border justify-content-center bg-dark text-white rounded">
+            {{ favorites[i][0]['name'] }} ({{ favorites[i][0]['symbol'] }})
+          </div>
+
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            Current
+            </div>
+            <div class="col p-3 border bg-dark text-white rounded">
+            {{ favorites[i][0]['current_price'] }}
+            </div>
+          </div>
+
+          {% if settings['dashboard']['1hour'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            1 Hour
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_1h_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['24hours'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            24 Hour
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_24h_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['7days'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            7 Day
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_7d_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['14days'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            14 Day
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_14d_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['30days'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            30 Day
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_30d_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['200days'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            200 Day
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_200d_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['1year'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            1 Year
+            </div>
+            <div class="col p-3 border bg-dark num rounded">
+            {{ favorites[i][0]['price_change_percentage_1y_in_currency'] }}%
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['quantity'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            Owned
+            </div>
+            <button type="button" class="col p-3 border bg-dark modal-quant text-white text-start rounded" value="{{favorites[i][0]['id']}},{{i}}" data-bs-toggle="modal" href="#exampleModal">
+            {{ favorites[i][1] }}
+            </button>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['netvalue'] %}
+          <div class="row">
+            <div class="col p-3 border bg-dark text-white rounded">
+            Value
+            </div>
+            <div class="col p-3 border bg-dark text-white rounded">
+            {{ favorites[i][2] }}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if settings['dashboard']['sparkline'] %}
+          <div class="row">
+            <div class="col border bg-dark text-white text-center">
+              7 Day &#8722; High: {{ favorites[i][0]['sparkline_in_7d'][1] }} &#8722; Low: {{ favorites[i][0]['sparkline_in_7d'][2] }}
+            </div>
+          </div>
+          <div class="row">
+            <div class="col border bg-dark text-white">
+              {{ favorites[i][0]['sparkline_in_7d'][0] }}
+            </div>
+          </div>
+          {% endif %}
+
+          <form method='POST'>
+            <button type="submit" class="btn btn-secondary btn-sm btn-block btn-dark btn-outline-danger rounded" style="width:100%" value="{{ favorites[i][0]['id'] }}" name='remove_favorite'>Remove {{ favorites[i][0]['symbol'] }}</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% endif %}
+    </div>
+  {% else %}
+    <h4 align="center" class="text-white p-3">Guest Account</h4>
+    <form method='POST'>
+      <div class="container">
+        <div class="row">
+          <div class="col text-center">
+            <button type="submit" class="btn btn-primary" name="guest" value="guest">Try it out!</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  {% endif %}
+{% endif %}
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Enter Quantity</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method='POST'>
+        <div class="modal-body">
+          <div class="form-group">
+            <input type="number" step="any" min="0" class="form-control" name="quantity" placeholder="0.000"/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit"  class="btn btn-primary" id="savequant" name="to_save">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

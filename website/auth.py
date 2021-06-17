@@ -3,8 +3,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 import json
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
-from .views import search, currency_cache_query
-from . import db, mail, crypto_lookup
+from .views import search
+from . import db, mail
 from flask_mail import Message
 
 
@@ -19,8 +19,6 @@ def login():
   else:
     if 'reset' in session:
       session.pop('reset', None)
-    # else:
-    #   flash("You must log in to use some features, though you may still search for currencies!", category='error')
 
   if request.method == 'POST':
     if 'search' in request.form:
@@ -54,7 +52,7 @@ def login():
 def logout():
   session.clear()
   logout_user()
-  return redirect(url_for('auth.login'))
+  return redirect(url_for('views.home'))
 
 
 @auth.route('/signup', methods=['GET', 'POST'])
